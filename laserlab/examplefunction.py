@@ -13,4 +13,4 @@ def add(x,y):
 
 def test_add():
   """ unit test for add function"""
-  assert add(1,2) == 3
+  assert add(2,2) == 4
