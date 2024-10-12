@@ -1,5 +1,5 @@
 """ Test functions for example module """
-from examplefunction.py import add
+from examplefunction import add
 
 def test_add():
     """ unit test for add function"""
