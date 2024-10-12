@@ -9,4 +9,4 @@ def add(x,y):
     return:
       sum of both inputs
     """
-    return np.sum(x,y)
+    return np.sum([x,y])
