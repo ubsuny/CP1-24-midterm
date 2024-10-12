@@ -1,5 +1,6 @@
 """ Test functions for example module """
+from examplefunction.py import add
 
 def test_add():
-  """ unit test for add function"""
-  assert add(1,1) == 2
+    """ unit test for add function"""
+    assert add(1,1) == 2
