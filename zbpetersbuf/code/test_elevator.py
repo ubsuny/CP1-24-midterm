@@ -10,7 +10,7 @@ print(1)
 print(vel[1])
 """
 from imp_to_metr import imptomec
-from direcofmov_fromaccdata import dimotion, pldimot, tampereddata
+from zbpetersbuf.code.elevator import dimotion, pldimot, tampereddata
 
 def test_imptomec():
     """This tests the ohmscur function"""
@@ -21,9 +21,9 @@ def test_imptomec():
 import pandas as pd
 eup = pd.read_csv('/workspaces/CP1-24-midterm/zbpetersbuf/data/LL01_eupdata.csv')
 edn = pd.read_csv('/workspaces/CP1-24-midterm/zbpetersbuf/data/LL02_edndata.csv')
-tdata = pd.read_csv('/workspaces/CP1-24-midterm/zbpetersbuf/data/LL02_edndata.csv')
+tdata = pd.read_csv('/workspaces/CP1-24-midterm/zbpetersbuf/data/phonenotmoving.csv')
 
-vel = dimotion(edn)
+vel = dimotion(tdata)
 
 
 
