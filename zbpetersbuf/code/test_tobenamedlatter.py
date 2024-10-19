@@ -10,24 +10,20 @@ print(1)
 print(vel[1])
 """
 from imp_to_metr import imptomec
-from direcofmov_fromaccdata import dimotion, pldimot
+from direcofmov_fromaccdata import dimotion, pldimot, tampereddata
 
 def test_imptomec():
     """This tests the ohmscur function"""
     assert imptomec(2, 'yard')==1.83
     assert imptomec(3, 'foot')==0.915
 
-print(imptomec(2,'yard')==1.83)
-print(imptomec(2,'Yd')==1.83)
 
 import pandas as pd
 eup = pd.read_csv('/workspaces/CP1-24-midterm/zbpetersbuf/data/LL01_eupdata.csv')
 edn = pd.read_csv('/workspaces/CP1-24-midterm/zbpetersbuf/data/LL02_edndata.csv')
 
-vel = dimotion(eup)
+vel = dimotion(edn)
 
-a=vel[0][:,1]
-print(a[1])
 
 
 pldimot(vel)
