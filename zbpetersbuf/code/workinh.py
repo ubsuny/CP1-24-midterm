@@ -1,8 +1,3 @@
-"""this is the walking data code
-https://en.wikipedia.org/wiki/Vincenty%27s_formulae#cite_note-1
-
-"""
-
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -25,15 +20,15 @@ def walkeq(walkdt):
     u = np.zeros(len)
     phi = np.zeros(len)
     l=abs(laloalt[0][1]-laloalt[1][1])
-    lam = l
     s = np.zeros(len)
 
     for i in range(len-1):
         phi[i]=laloalt[i][0]
         u[i] = m.atan((1-f)*m.tan(phi[i]))
 
-    while lam > 10**(-8):
-        for i in range(len-1):
+    for i in range(len-1):
+        lam = l
+        while lam > 10**(-6):
             sio=((m.cos(u[i+1])*m.sin(lam))**2+(m.cos(u[i])*m.sin(u[i+1])-m.sin(u[i])*m.cos(u[i+1])*m.cos(lam))**2)**(1/2)
             coo=m.sin(u[i])*m.sin(u[i+1])+m.cos(u[i])*m.cos(u[i+1])*m.cos(lam)
             sig=m.atan2(sio,coo)
@@ -41,6 +36,7 @@ def walkeq(walkdt):
             sigm=0.5*m.acos(m.cos(sig)-2*(m.sin(u[i])*(m.sin(u[i+1])))/(m.cos(alp)**2))
             c=f*(m.cos(sig)**2)*(4+f*(4-3*(m.cos(alp)**2)))/16
             lam=l+(1-c)*f*(m.sin(sig))*(sig+c*m.sin(sig)*(m.cos(2*sigm)+c*m.cos(sig)*(2*(m.cos(2*sigm)**2)-1)))
+
         litu=((m.cos(alp))**2)*((a**2-b**2)/(b**2))
         biga=1+((u**2)/16384)*(4096+(litu**2)*((litu**2)*(320-175*(litu**2))-768))
         bigb=((litu**2)/1024)*(256+(litu**2)*((litu**2)(74-47*(litu**2))-128))
