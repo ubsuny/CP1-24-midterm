@@ -19,6 +19,8 @@ vel = np.zeros((l, 4))
 """
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
+import os
 
 def dimotion(edata):
     len = edata.shape[0]
@@ -34,6 +36,30 @@ def dimotion(edata):
             vel[i+1,j]= vel[i,j] + t*edaxyz[i][j]
     return vel,edat
 
+
+
 def pldimot(vel):
-    plt.figure(vel[0][:,0], vel[1])
+    plt.figure()
+
+    vel_df = pd.DataFrame(vel[0])
+    tim = vel_df.iloc[0].values
+
+    plt.figure(tim[:], vel[1], marker='o')
+    plt.title('xdir')
+    plt.xlabel('t?')
+    plt.ylabel('y?')
+    plt.grid()
+    plot = input("Do you want to save the plot? (yes/no): ").strip().lower()
+
+    if plot == 'yes':
+        fpath = input("enter where to save: ").strip()
+        if not os.path.exists(fpath):
+            print("Directory does not exist, try again")
+        else:
+            filpath = os.path.join(fpath, "plot.png")
+            plt.savefig(filpath, format='png')
+            print(f"Plot saved as {filpath}")
+    else:
+        print("Plot not saved.")
+
 

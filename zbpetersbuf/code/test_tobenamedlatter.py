@@ -26,13 +26,10 @@ edn = pd.read_csv('/workspaces/CP1-24-midterm/zbpetersbuf/data/LL02_edndata.csv'
 
 vel = dimotion(eup)
 
-import matplotlib.pyplot as plt
+a=vel[0][:,1]
+print(a[1])
 
 
-x=[1,2,3]
-y=[1,2,3]
-plt.figure()
-plt.plot(x,y, marker='o')
-plt.title('exampl')
-plt.savefig('exampl', format='png')
-print(plt.show())
+pldimot(vel)
+
+
