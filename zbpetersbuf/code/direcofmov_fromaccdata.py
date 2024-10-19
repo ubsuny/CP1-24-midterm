@@ -4,13 +4,9 @@ direcofmov_fromaccdata.py
 note to self
 import pandas as pd
 df = pd.read_csv('/workspaces/CP1-24-midterm/zbpetersbuf/data/tes_data.csv')
-
-eupdata = pd.read_csv('/workspaces/CP1-24-midterm/zbpetersbuf/data/LL001_elevatorup.cvs')
-edowndata = pd.read_csv('/workspaces/CP1-24-midterm/zbpetersbuf/data/LL002_elevatordown.cvs')
+ed = pd.read_csv('/workspaces/CP1-24-midterm/zbpetersbuf/data/LL02_edndata.cvs')
 
 """
 import pandas as pd
 import numpy as np
-
-df = pd.read_csv('/workspaces/CP1-24-midterm/zbpetersbuf/data/tes_data.csv')
-print(df)
+eu = pd.read_csv('/workspaces/CP1-24-midterm/zbpetersbuf/data/LL01_eupdata.cvs')
