@@ -1,5 +1,7 @@
 """Returns the greater circle distance between two points given a pair of coordinates"""
 
+import math
+
 def haversine(coord1, coord2):
     """
     Calculate the great-circle distance between two points on Earth 

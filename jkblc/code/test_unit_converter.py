@@ -1,4 +1,5 @@
-# test_unit_converter.py
+"""Tests for unit converter module"""
+
 import unit_converter
 
 def test_feet_to_meters():

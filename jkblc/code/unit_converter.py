@@ -1,4 +1,4 @@
-"""Converts feet and yards to meters"""
+"""Unit converter for feet and yards to meters"""
 
 def feet_to_meters(feet):
     """Convert feet to meters."""

@@ -1,5 +1,7 @@
 """Returns the direction from acceleration given coordinates in 3D"""
 
+import math
+
 def direction_from_acceleration(x, y, z):
     """
     Calculate the direction of motion in 3D space from acceleration data.
