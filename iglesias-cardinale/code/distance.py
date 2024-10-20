@@ -59,9 +59,9 @@ def gps_wgs84(lat,lon,alt):
 
     r = r_earth(lat) + alt
 
-    x = r*np.sin(lon)*np.cos(lat)
-    y = r*np.sin(lon)*np.sin(lat)
-    z = r*np.cos(lon)
+    x = r * np.cos(lat) * np.cos(lon) 
+    y = r * np.cos(lat) * np.sin(lon)  
+    z = r * np.sin(lat) 
 
     return x, y, z
 
