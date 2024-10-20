@@ -1,7 +1,7 @@
 """Test for accurate direction from acceleration"""
 
-from direction_from_acceleration import direction_from_acceleration
 import pytest
+from direction_from_acceleration import direction_from_acceleration
 
 def test_direction_from_acceleration():
     """Tests for acceleration along the x and y axes"""
