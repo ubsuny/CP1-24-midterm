@@ -28,7 +28,7 @@ def walkeq(walkdt):
 
     for i in range(len-1):
         lam = l
-        while lam > 10**(-6):
+        while lam > 10**(-5):
             sio=((m.cos(u[i+1])*m.sin(lam))**2+(m.cos(u[i])*m.sin(u[i+1])-m.sin(u[i])*m.cos(u[i+1])*m.cos(lam))**2)**(1/2)
             coo=m.sin(u[i])*m.sin(u[i+1])+m.cos(u[i])*m.cos(u[i+1])*m.cos(lam)
             sig=m.atan2(sio,coo)
