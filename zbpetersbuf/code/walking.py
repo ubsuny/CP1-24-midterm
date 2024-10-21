@@ -2,22 +2,19 @@
 https://en.wikipedia.org/wiki/Vincenty%27s_formulae#cite_note-1
 
 """
-
+import os
+import math as m
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import os
-import math as m
 
 walk = pd.read_csv('/workspaces/CP1-24-midterm/zbpetersbuf/data/walktest.csv')
-
-"""print(walk)"""
 
 """for the test the horizontal accuracy was 4.7 m, and verticle accuracy was 3.4"""
 
 def walkeq(walkdt):
     len = walkdt.shape[0]
-    """walkt = list(walkdt.loc[:, 'Time (s)'])"""
+    # walkt = list(walkdt.loc[:, 'Time (s)'])
     laloalt = list(zip(walkdt.loc[:, 'Latitude (°)'], walkdt.loc[:, 'Longitude (°)'], walkdt.loc[:, 'Altitude WGS84 (m)']))
     a = 6378000
     f = 1/(298.3)
@@ -42,7 +39,7 @@ def walkeq(walkdt):
             c=f*(m.cos(sig)**2)*(4+f*(4-3*(m.cos(alp)**2)))/16
             lam=l+(1-c)*f*(m.sin(sig))*(sig+c*m.sin(sig)*(m.cos(2*sigm)+c*m.cos(sig)*(2*(m.cos(2*sigm)**2)-1)))
         litu=((m.cos(alp))**2)*((a**2-b**2)/(b**2))
-        biga=1+((u**2)/16384)*(4096+(litu**2)*((litu**2)*(320-175*(litu**2))-768))
+        biga=1+((u**2)/16384)*(4096 + (litu**2)*((litu**2)*(320-175*(litu**2))-768))
         bigb=((litu**2)/1024)*(256+(litu**2)*((litu**2)(74-47*(litu**2))-128))
         dsig=bigb*m.sin(sig)*(m.cos(2*sigm)+0.25*bigb*(m.cos(sig)*(2*(m.cos(2*sigm))**2-1)-(1/6)*bigb*m.cos(2*sigm)*(4*(m.sin(sig)**2)-3)*(4*(m.cos(2*sigm)**2)-3)))
         s[i+1]=b*biga*(sig-dsig)
