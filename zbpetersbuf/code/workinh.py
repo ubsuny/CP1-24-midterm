@@ -2,6 +2,8 @@
 
 import matplotlib.pyplot as plt
 import os
+
+for the test the horizontal accuracy was 4.7 m, and verticle accuracy was 3.4
 """
 
 
@@ -9,26 +11,22 @@ import math as m
 import numpy as np
 import pandas as pd
 
-
-"""for the test the horizontal accuracy was 4.7 m, and verticle accuracy was 3.4"""
-
 def walkeq(walkdt):
-    len = walkdt.shape[0]
-    """walkt = list(walkdt.loc[:, 'Time (s)'])"""
+    #walkt = list(walkdt.loc[:, 'Time (s)'])
     laloalt = list(zip(walkdt.loc[:, 'Latitude (°)'], walkdt.loc[:, 'Longitude (°)'], walkdt.loc[:, 'Altitude WGS84 (m)']))
     a = 6378000
     f = 1/(298.3)
     b=(1-f)*a
-    u = np.zeros(len)
-    phi = np.zeros(len)
+    u = np.zeros(walkdt.shape[0])
+    phi = np.zeros(walkdt.shape[0])
     l=abs(laloalt[0][1]-laloalt[1][1])
-    s = np.zeros(len)
+    s = np.zeros(walkdt.shape[0])
 
-    for i in range(len-1):
+    for i in range(walkdt.shape[0]-1):
         phi[i]=laloalt[i][0]
         u[i] = m.atan((1-f)*m.tan(phi[i]))
-
-    for i in range(len-1):
+    
+    for i in range(walkdt.shape[0]-1):
         lam = l
         while lam > 10**(-6):
             sio=((m.cos(u[i+1])*m.sin(lam))**2+(m.cos(u[i])*m.sin(u[i+1])-m.sin(u[i])*m.cos(u[i+1])*m.cos(lam))**2)**(1/2)
