@@ -22,8 +22,9 @@ import pandas as pd
 eup = pd.read_csv('/workspaces/CP1-24-midterm/zbpetersbuf/data/LL01_eupdata.csv')
 edn = pd.read_csv('/workspaces/CP1-24-midterm/zbpetersbuf/data/LL02_edndata.csv')
 tdata = pd.read_csv('/workspaces/CP1-24-midterm/zbpetersbuf/data/phonenotmoving.csv')
+etot = pd.read_csv('/workspaces/CP1-24-midterm/zbpetersbuf/data/LL06_eletot.csv')
 
-vel = dimotion(tdata)
+vel = dimotion(etot)
 
 
 
