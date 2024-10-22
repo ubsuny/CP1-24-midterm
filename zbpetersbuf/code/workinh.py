@@ -14,7 +14,7 @@ def walkeq(walkdt):
     """docstring type words here"""
 
     laloalt = list(zip(walkdt.loc[:, 'Latitude (°)'],
-                        walkdt.loc[:, 'Longitude (°)'], walkdt.loc[:, 'Altitude WGS84 (m)']))
+            walkdt.loc[:, 'Longitude (°)'], walkdt.loc[:, 'Altitude WGS84 (m)']))
 
     u = np.zeros(walkdt.shape[0])
     s = np.zeros(walkdt.shape[0])
@@ -50,5 +50,19 @@ def walkeq(walkdt):
     return s
 
 walk = pd.read_csv('/workspaces/CP1-24-midterm/zbpetersbuf/data/LL07_circle.csv')
-print(walkeq(walk))
-print(sum(walkeq(walk)))
+exmp = walkeq(walk)
+print(exmp)
+print(sum(exmp))
+
+def distbetp(dta,a):
+    """for this function if you wasnt to know the distance between two data
+    coleced points only enter the smaller nemuber in 'a'
+    ie if you want to know the distanse between points 4 and 5 only enter 4"""
+    b = a-1
+    b = max(b,0)
+    return dta[b]
+
+print(distbetp(exmp,2))
+
+def gpsfig(walkdt):
+    
