@@ -32,7 +32,9 @@ import pandas as pd
 def dimotion(edata):
     """docstring words"""
     edat = list(edata.loc[:, 'Time (s)'])
-    edaxyz = list(zip(edata.loc[:, 'Linear Acceleration x (m/s^2)'], edata.loc[:, 'Linear Acceleration y (m/s^2)'], edata.loc[:, 'Linear Acceleration z (m/s^2)']))
+    edaxyz = list(zip(edata.loc[:, 'Linear Acceleration x (m/s^2)'],
+            edata.loc[:, 'Linear Acceleration y (m/s^2)'],
+                edata.loc[:, 'Linear Acceleration z (m/s^2)']))
     vel = np.zeros((edata.shape[0], 3))
     for j in range(3):
         for i in range(edata.shape[0]-1):
