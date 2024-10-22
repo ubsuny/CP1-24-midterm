@@ -53,4 +53,5 @@ def walkeq(walkdt):
 
 
 walk = pd.read_csv('/workspaces/CP1-24-midterm/zbpetersbuf/data/walktest.csv')
+walk = pd.read_csv('/workspaces/CP1-24-midterm/zbpetersbuf/data/walktest.csv')
 print(walkeq(walk))
