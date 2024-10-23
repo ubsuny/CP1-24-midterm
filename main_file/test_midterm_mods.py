@@ -21,4 +21,7 @@ def test_diffm():
     lon1=-78.785005700
     lon2=-78.784864890
     print(diffm(lat1,lat2, lon1,lon2))
-    assert diffm(lat1,lat2,lon1,lon2)>.5
+    assert (np.sqrt(diffm(lat1,lat2,lon1,lon2)[0]**2+diffm(lat1,lat2,lon1,lon2)[1]**2))>.5
+
+def test_file():
+    reader("/workspaces/CP1-24-midterm/main_file/Triangle Data/Location.csv")
