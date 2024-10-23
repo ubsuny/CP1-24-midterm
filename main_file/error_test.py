@@ -14,7 +14,6 @@ def diff(lat1,lat2, lon1,lon2):
     return np.array([(lon2-lon1),(lat2-lat1)])
 
 def diffm(lat1, lat2,lon1, lon2):
-
     return unit_converter.ft_to_m(diff(lat1,lat2, lon1, lon2))
 
 def reader(path):
@@ -22,11 +21,3 @@ def reader(path):
     lats=file["Latitude (°)"]
     lons=file["Longitude (°)"]
     return lats, lons
-
-
-
-
-
-
-
-    
