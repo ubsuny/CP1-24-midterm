@@ -63,6 +63,3 @@ def distbetp(dta,a):
     return dta[b]
 
 print(distbetp(exmp,2))
-
-"""def gpsfig(walkdt):"""
-    

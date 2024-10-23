@@ -15,7 +15,7 @@ eup = pd.read_csv('/workspaces/CP1-24-midterm/zbpetersbuf/data/LL01_eupdata.csv'
 edn = pd.read_csv('/workspaces/CP1-24-midterm/zbpetersbuf/data/LL02_edndata.csv')
 """
 from imp_to_metr import imptomec
-from elevator import dimotion, pldimot, tampereddata
+from elevator import dimotion, pldimot
 
 def test_imptomec():
     """This tests the ohmscur function"""

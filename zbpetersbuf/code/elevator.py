@@ -48,6 +48,7 @@ def dimotion(edata):
 def pldimot(vel):
     """docstring words"""
     plt.figure()
+    """"subplot """
     vel_df = pd.DataFrame(vel[0])
     vmovx = vel_df.iloc[:,0].values
     vmovy = vel_df.iloc[:,1].values
