@@ -64,3 +64,26 @@ def dist(long_1, long_2, lat_1, lat_2, a, b, f):
 
         return s
 
+# Earth's parameters
+# a
+SEMI_MAJOR_AXIS = 6378137.0
+# b
+SEMI_MINOR_AXIS = 6356752.314245
+# 1/f
+INVERSE_FLATTENING = 298.257223563
+
+# Function that calculates the distance on Earth
+def earth_dist(longitude_1, longitude_2, latitude_1, latitude_2):
+    """
+    Returns the distance between two angular positions (in radians) on the Earth's surface
+
+    Parameters:
+    Inputs:
+    longitude_1 (number), latitude_1 (number), longitude_2 (number), latitude_2 (number):
+    the angular positions of the first and second points respectively
+    Outputs:
+    distance (number): the desired distance in (km)
+    """
+    distance = dist(longitude_1, longitude_2, latitude_1, latitude_2,
+                    SEMI_MAJOR_AXIS, SEMI_MINOR_AXIS, INVERSE_FLATTENING)
+    return distance
