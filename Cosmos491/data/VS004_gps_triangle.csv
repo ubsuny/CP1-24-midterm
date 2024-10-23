@@ -1,0 +1,5 @@
+Latitude, Longitude, Altitude (m), Time (s)
+, , , 0   # Start point of the triangle (corner A)
+, , ,     # Moving along side 'a' (80 ft)
+, , ,     # Moving along side 'b' (50 yards = 150 ft)
+, , ,     # Returning to the start point (from side 'c')
