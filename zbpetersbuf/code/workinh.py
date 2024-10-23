@@ -11,7 +11,7 @@ import numpy as np
 import pandas as pd
 
 def walkeq(walkdt):
-    """docstring type words here"""
+    """docstring type words here the following algotrith ADD REFRENCES HERE"""
 
     laloalt = list(zip(walkdt.loc[:, 'Latitude (°)'],
             walkdt.loc[:, 'Longitude (°)'], walkdt.loc[:, 'Altitude WGS84 (m)']))
