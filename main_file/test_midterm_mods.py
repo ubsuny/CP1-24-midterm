@@ -2,7 +2,8 @@ import pytest
 import numpy as np
 from unit_converter import ft_to_m, yd_to_m
 from unix_time import years
-from distance_calculator import diffm
+from distance_calculator import diffm, reader
+
 def test_ft_to_m():
     np.testing.assert_allclose(ft_to_m(1),(.3048)) 
 

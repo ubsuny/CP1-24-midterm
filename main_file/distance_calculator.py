@@ -11,7 +11,7 @@ def diffm(lat1, lat2,lon1, lon2):
     return unit_converter.ft_to_m(diff(lat1,lat2, lon1, lon2))
 
 def reader(path):
-    file=pr.read_csv(path)
+    file=pd.read_csv(path)
     print(file)
     return
 
