@@ -2,6 +2,8 @@
 This module is to convert between the units
 """
 
+from libraries_module import np
+
 def foot_to_meters(foot):
     """
     A function that returns a length in (meters)
@@ -157,3 +159,29 @@ def kilometers_to_meters(kilometers):
     (number): the equivalent length in (meters)
     """
     return kilometers * 1000
+
+def deg_to_rad(degrees):
+    """
+    Returns the angle in radians
+
+    Parameters:
+    Inputs:
+    degrees (array of numbers): the angle(s) in degrees
+    Outputs:
+    degs (array of numbers): the angle(s) in radians
+    """
+    degs = np.array(degrees)
+    return np.radians(degs)
+
+def rad_to_deg(radians):
+    """
+    Returns the angle in degrees
+
+    Parameters:
+    Inputs:
+    radians (array of numbers): the angle(s) in radians
+    Outputs:
+    rads (array of numbers): the angle(s) in degrees
+    """
+    rads = np.array(radians)
+    return np.degrees(rads)
