@@ -64,5 +64,5 @@ def distbetp(dta,a):
 
 print(distbetp(exmp,2))
 
-def gpsfig(walkdt):
+"""def gpsfig(walkdt):"""
     
