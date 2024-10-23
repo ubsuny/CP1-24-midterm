@@ -24,10 +24,10 @@ def convert_to_unix_time_from_csv(file_path):
 
 # List of all CSV files
 file_paths = [
-    'data/gps_data_1.csv',  # Replace with actual file paths
-    'data/gps_data_2.csv',
-    'data/gps_data_3.csv',
-    'data/gps_data_4.csv'
+    'VS001_acceleration.csv',  # Replace with actual file paths
+    'VS002_acceleration_return.csv',
+    'VS003_gps_circle.csv',
+    'VS004_gps_triangle.csv'
 ]
 
 # Loop through each file, convert the date and time to Unix time, and print the result
