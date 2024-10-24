@@ -35,14 +35,14 @@ def extract_date_time(markdown_file):
 
         # Convert to Unix time
         dt = datetime.strptime(datetime_str, '%m/%d/%Y %I:%M %p')
-        unix_time = int(time.mktime(dt.timetuple()))
+        unix_timestamp = int(time.mktime(dt.timetuple()))
 
-        return unix_time
+        return unix_timestamp
 
     raise ValueError("Date or time not found in the markdown file.")
 
 if __name__ == "__main__":
-    markdown_file = input("Enter the markdown file name (with .md extension): ")
+    input_markdown_file = input("Enter the markdown file name (with .md extension): ")
     try:
         unix_time = extract_date_time(markdown_file)
         print(f"Unix time: {unix_time}")
@@ -52,4 +52,3 @@ if __name__ == "__main__":
         print(f"Error: The file '{markdown_file}' was not found.")
     except OSError as e:  # Handle other OS-related errors (e.g., permissions)
         print(f"Error: {e}")
-        
