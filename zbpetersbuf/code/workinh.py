@@ -5,9 +5,10 @@ import os
 
 for the test the horizontal accuracy was 4.7 m, and verticle accuracy was 3.4
 """
-
+import os
 import math as m
 import numpy as np
+import matplotlib.pyplot as plt
 import pandas as pd
 
 def walkeq(walkdt):
@@ -51,7 +52,6 @@ def walkeq(walkdt):
 
 walk = pd.read_csv('/workspaces/CP1-24-midterm/zbpetersbuf/data/LL07_circle.csv')
 exmp = walkeq(walk)
-print(exmp)
 print(sum(exmp))
 
 def distbetp(dta,a):
@@ -64,9 +64,47 @@ def distbetp(dta,a):
 
 print(distbetp(exmp,2))
 
-def gpsloc(data):
+def gpsloc(datta):
     """docstring type words here the following algotrith ADD REFRENCES HERE"""
 
-    lalo = list(zip(data.loc[:, 'Latitude (°)'], data.loc[:, 'Longitude (°)']))
+    laloalt = list(zip(datta.loc[:, 'Latitude (°)'],
+            datta.loc[:, 'Longitude (°)'], datta.loc[:, 'Altitude (m)']))
 
+    xax = np.zeros(datta.shape[0])
+    yax = np.zeros(datta.shape[0])
+
+    for i in range(datta.shape[0]):
+        xax[i]=(laloalt[i][2])*(m.cos(np.radians(laloalt[i][0])))*(m.cos(np.radians(laloalt[i][1])))
+        yax[i]=(laloalt[i][2])*(m.cos(np.radians(laloalt[i][0])))*(m.sin(np.radians(laloalt[i][1])))
     
+    return xax, yax
+
+
+def plwalk(vel):
+    plt.figure()
+    """"subplot """
+    vmovx = pd.DataFrame(vel[0])
+    vmovy = pd.DataFrame(vel[1])
+    plt.plot(vmovx,vmovy, color='red')
+    plt.title('walkingtilt')
+    plt.xlabel('xlable')
+    plt.ylabel('ylable')
+    plt.grid()
+    plot = input("Do you want to save the plot? (yes/no): ").strip().lower()
+
+    if plot == 'yes':
+        fpath = input("enter where to save: ").strip()
+        if not os.path.exists(fpath):
+            print("Directory does not exist, try again")
+        else:
+            filpath = os.path.join(fpath, "walking.png")
+            plt.savefig(filpath, format='png', dpi=600)
+            print(f"Plot saved as {filpath}")
+    else:
+        print("Plot not saved.")
+
+walk = pd.read_csv('/workspaces/CP1-24-midterm/zbpetersbuf/data/LL07_circle.csv')
+
+examp2 = gpsloc(walk)
+
+plwalk(examp2)
