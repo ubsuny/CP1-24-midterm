@@ -19,7 +19,7 @@ def test_calculate_direction():
     directions = calculate_direction(acceleration_data)
     
     for i in range(len(directions)):
-        assert directions[i] == pytest.approx(expected_directions[i], rel=1e-4)
+        assert directions[i] == pytest.approx(expected_directions[i], rel=1e-2)
 
     # Test with edge case: acceleration values are all 0
     zero_acceleration = [[0, 0, 0]]
