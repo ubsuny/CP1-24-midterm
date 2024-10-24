@@ -1,5 +1,5 @@
 import pytest
-from unit_converter_code.py import feet_to_meters, yards_to_meters  
+from code.unit_converter_code.py import feet_to_meters, yards_to_meters  
 def test_feet_to_meters():
     assert feet_to_meters(1) == 0.3048  # 1 foot = 0.3048 meters
     assert feet_to_meters(10) == 3.048  # 10 feet = 3.048 meters
