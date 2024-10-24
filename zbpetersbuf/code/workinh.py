@@ -79,7 +79,6 @@ def gpsloc(datta):
     
     return xax, yax
 
-
 def plwalk(vel):
     plt.figure()
     """"subplot """
