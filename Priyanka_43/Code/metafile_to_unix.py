@@ -15,7 +15,7 @@ def convert_to_unix(file_path):
     int: Unix time (seconds since epoch).
     """
     try:
-        with open(file_path, 'r') as file:
+        with open(file_path, 'r', encoding='utf-8') as file:
             # Assuming the datetime is on the first line in the format 'YYYY-MM-DD HH:MM:SS'
             date_time_str = file.readline().strip()
 
@@ -35,7 +35,3 @@ def convert_to_unix(file_path):
             )
             return unix_time
 
-    except FileNotFoundError:
-        raise FileNotFoundError(f"The file {file_path} does not exist.")
-    except ValueError:
-        raise ValueError("Date format should be 'YYYY-MM-DD HH:MM:SS'.")
