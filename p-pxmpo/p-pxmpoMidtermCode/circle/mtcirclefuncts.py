@@ -78,3 +78,4 @@ def calculate_distances(gps_coords):
         distance = haversine(lat1, lon1, lat2, lon2)
         distances.append(distance)
     return distances
+
