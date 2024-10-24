@@ -38,8 +38,8 @@ def extract_date_time(markdown_file):
         unix_time = int(time.mktime(dt.timetuple()))
 
         return unix_time
-    else:
-        raise ValueError("Date or time not found in the markdown file.")
+
+    raise ValueError("Date or time not found in the markdown file.")
 
 if __name__ == "__main__":
     markdown_file = input("Enter the markdown file name (with .md extension): ")
