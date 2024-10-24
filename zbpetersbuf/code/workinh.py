@@ -72,13 +72,13 @@ def gpsloc(datta):
     
     return xax, yax
 
-def plwalk(vel):
+def plwalk(vel,u_title,u_name):
     """This function plots the location of movment acros the earth the data you input for this function is the data exporte from the function gpsloc"""
     plt.figure()
     vmovx = pd.DataFrame(vel[0])
     vmovy = pd.DataFrame(vel[1])
     plt.plot(vmovx,vmovy, color='red')
-    plt.title('walkingtilt')
+    plt.title(u_title)
     plt.xlabel('xlable')
     plt.ylabel('ylable')
     plt.grid()
@@ -89,7 +89,7 @@ def plwalk(vel):
         if not os.path.exists(fpath):
             print("Directory does not exist, try again")
         else:
-            filpath = os.path.join(fpath, "walking.png")
+            filpath = os.path.join(fpath, u_name)
             plt.savefig(filpath, format='png', dpi=600)
             print(f"Plot saved as {filpath}")
     else:

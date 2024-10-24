@@ -1,6 +1,6 @@
 """
 mak_plts.py
-This module can be ran to the get the plots for the elevator velocities
+This module can be ran to the get the plot for the elevator velocities
 and position plots for the circle and triangle
 """
 from elevator import dimotion, pldimot
@@ -15,8 +15,8 @@ pldimot(vel)
 
 walk = pd.read_csv('/workspaces/CP1-24-midterm/zbpetersbuf/data/LL07_circle.csv')
 datforgraf = gpsloc(walk)
-plwalk(datforgraf)
+plwalk(datforgraf,"Behold a circle","walking_cir.png")
 
-triwalk = pd.read_csv('/workspaces/CP1-24-midterm/zbpetersbuf/data/LL07_circle.csv')
-datforgraf = gpsloc(walk)
-plwalk(datforgraf)
+triwalk = pd.read_csv('/workspaces/CP1-24-midterm/zbpetersbuf/data/LL09_triangle.csv')
+trwal = gpsloc(triwalk)
+plwalk(trwal,"Walking in a triangle near the bus stop","walking_tri.png")
