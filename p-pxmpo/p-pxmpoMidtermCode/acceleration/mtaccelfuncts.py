@@ -41,10 +41,10 @@ def check_direction(y_values):
              "down" if any value is less than -1 first,
              "No significant trend" if all values are within the range [-1, 1].
     """
-    
+
     for value in y_values:
         if value > 1:
             return "up"
-        elif value < -1:
+        if value < -1:
             return "down"
     return "No significant trend"
