@@ -16,3 +16,7 @@ pldimot(vel)
 walk = pd.read_csv('/workspaces/CP1-24-midterm/zbpetersbuf/data/LL07_circle.csv')
 datforgraf = gpsloc(walk)
 plwalk(datforgraf)
+
+triwalk = pd.read_csv('/workspaces/CP1-24-midterm/zbpetersbuf/data/LL07_circle.csv')
+datforgraf = gpsloc(walk)
+plwalk(datforgraf)
