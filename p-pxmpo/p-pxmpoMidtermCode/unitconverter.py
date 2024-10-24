@@ -1,3 +1,10 @@
+"""
+This module provides conversion functions for length measurements.
+
+The following conversions are included:
+- Yards to meters
+- Feet to meters
+"""
 def yards_to_meters(yards):
     """
     Convert yards to meters.
