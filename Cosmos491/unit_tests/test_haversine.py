@@ -1,6 +1,6 @@
 import pytest
 import numpy as np
-from your_module import haversine  # Replace 'your_module' with your actual module name
+from distance_gps_location.py import haversine 
 
 def test_haversine():
     # Test with known distance between two points (Paris and London)
