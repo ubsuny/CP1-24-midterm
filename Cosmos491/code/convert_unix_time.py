@@ -24,7 +24,7 @@ def convert_to_unix_time_from_csv(file_path):
 
 # List of all CSV files
 file_paths = [
-    'VS001_acceleration.csv',  # Replace with actual file paths
+    'VS001_acceleration.csv', 
     'VS002_acceleration_return.csv',
     'VS003_gps_circle.csv',
     'VS004_gps_triangle.csv'
