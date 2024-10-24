@@ -1,5 +1,8 @@
+"""
+This module contains functions for processing CSV files and converting timestamps to Unix time.
+"""
+import datetime
 import pandas as pd
-from datetime import datetime, timedelta
 
 def add_timestamp_to_data(file_path, start_time_str):
     """
@@ -15,31 +18,24 @@ def add_timestamp_to_data(file_path, start_time_str):
     """
     # Read the CSV file
     df = pd.read_csv(file_path)
-    
     # Convert the start time string to a datetime object
     start_time = datetime.strptime(start_time_str, "%Y-%m-%d %H:%M:%S")
-    
     # Add a new column to the DataFrame for the full timestamp
     df['timestamp'] = df['Time (s)'].apply(lambda t: start_time + timedelta(seconds=t))
-    
     # Convert the timestamp to Unix time
     df['unix_time'] = df['timestamp'].apply(lambda x: int(x.timestamp()))
-    
     return df
 
 def process_multiple_files(file_paths, start_times):
     """
     Process multiple CSV files and convert their time data to full date-time and Unix time.
-    
     Parameters:
     file_paths (list of str): List of file paths for the CSV files.
     start_times (list of str): List of start date-time strings for each corresponding file.
-    
     Returns:
     dict: A dictionary where keys are file paths and values are DataFrames with timestamp data.
     """
     data_frames = {}
-    
     # Loop through each file and its corresponding start time
     for file_path, start_time_str in zip(file_paths, start_times):
         print(f"Processing {file_path} with start time {start_time_str}")
@@ -51,11 +47,9 @@ def process_multiple_files(file_paths, start_times):
         output_file = file_path.replace('.csv', '_with_timestamps.csv')
         df_with_timestamps.to_csv(output_file, index=False)
         print(f"Saved {output_file}")
-    
     return data_frames
 
 # Example usage
-
 # List of CSV file paths (replace with your actual file paths)
 file_paths = [
     'VS001_acceleration.csv',
@@ -63,7 +57,6 @@ file_paths = [
     'VS003_gps_circle.csv',
     'VS004_gps_triangle.csv'
 ]
-
 # List of start date and time strings corresponding to each file
 start_times = [
     "2024-10-23 17:16:00",  # Start time for the first file
@@ -71,6 +64,5 @@ start_times = [
     "2024-10-24 01:50:00",  # Start time for the third file
     "2024-10-24 02:30:00"   # Start time for the fourth file
 ]
-
 # Process the files and convert their time data
 data_frames = process_multiple_files(file_paths, start_times)
