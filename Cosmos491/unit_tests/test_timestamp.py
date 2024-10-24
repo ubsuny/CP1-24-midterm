@@ -58,18 +58,18 @@ def process_multiple_files(file_paths, start_times):
 
 # List of CSV file paths (replace with your actual file paths)
 file_paths = [
-    'data_1.csv',
-    'data_2.csv',
-    'data_3.csv',
-    'data_4.csv'
+    'VS001_acceleration.csv',
+    'VS002_acceleration_return.csv',
+    'VS003_gps_circle.csv',
+    'VS004_gps_triangle.csv'
 ]
 
 # List of start date and time strings corresponding to each file
 start_times = [
-    "2024-10-22 14:00:00",  # Start time for the first file
-    "2024-10-22 14:15:00",  # Start time for the second file
-    "2024-10-22 14:30:00",  # Start time for the third file
-    "2024-10-22 14:45:00"   # Start time for the fourth file
+    "2024-10-23 17:16:00",  # Start time for the first file
+    "2024-10-23 17:12:00",  # Start time for the second file
+    "2024-10-24 01:50:00",  # Start time for the third file
+    "2024-10-24 02:30:00",  # Start time for the fourth file
 ]
 
 # Process the files and convert their time data
