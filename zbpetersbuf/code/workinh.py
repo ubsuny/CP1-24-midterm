@@ -67,8 +67,8 @@ def gpsloc(datta):
     yax = np.zeros(datta.shape[0])
 
     for i in range(datta.shape[0]):
-        xax[i]=(m.cos((laloalt[i][0])/(m.pi/180)))*(m.cos((laloalt[i][1])/(m.pi/180)))
-        yax[i]=(m.cos((laloalt[i][0])/(m.pi/180)))*(m.sin((laloalt[i][1])/(m.pi/180)))
+        xax[i]=(laloalt[i][2])*(m.cos((laloalt[i][0])/(m.pi/180)))*(m.cos((laloalt[i][1])/(m.pi/180)))
+        yax[i]=(laloalt[i][2])*(m.cos((laloalt[i][0])/(m.pi/180)))*(m.sin((laloalt[i][1])/(m.pi/180)))
     
     return xax, yax
 

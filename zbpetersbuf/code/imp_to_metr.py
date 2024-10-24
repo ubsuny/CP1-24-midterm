@@ -8,5 +8,3 @@ def imptomec(x,lenguni):
     if lenguni == 'yard':
         x = 3*x
     return 0.305*x
-
-print((2023-1972)//4)

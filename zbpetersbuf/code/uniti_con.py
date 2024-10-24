@@ -26,6 +26,3 @@ def gt_unix(mod_name):
     sec = 86400*day + 60*minit + matime[5] + matime[6]*(10**(-3))
 
     return sec
-
-asd=gt_unix('LL08_circle.md')
-print(asd)

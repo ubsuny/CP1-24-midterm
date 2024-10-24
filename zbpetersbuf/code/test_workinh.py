@@ -11,9 +11,3 @@ exmp = walkeq(walk)
 print(sum(exmp))
 
 print(distbetp(exmp,2))
-
-walk = pd.read_csv('/workspaces/CP1-24-midterm/zbpetersbuf/data/LL07_circle.csv')
-
-examp2 = gpsloc(walk)
-
-plwalk(examp2)
