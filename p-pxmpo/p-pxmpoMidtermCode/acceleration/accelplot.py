@@ -5,9 +5,9 @@ The CSV file should contain columns for 'time' and 'acceleration'.
 The plot is generated using matplotlib.
 """
 
+import csv
 import pandas as pd
 import matplotlib.pyplot as plt
-import csv
 
 def plot_acceleration(csv_file_path):
     """
