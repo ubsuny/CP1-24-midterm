@@ -19,7 +19,7 @@ def extract_date_time(markdown_file):
     Outputs: ValueError: If the date or time is not found in the markdown file.
     """
 
-    with open(markdown_file, 'r') as file:
+    with open(markdown_file, 'r', encoding='utf-8') as file:
         content = file.read()
 
     # Use regex to find date and time
@@ -41,10 +41,13 @@ def extract_date_time(markdown_file):
     else:
         raise ValueError("Date or time not found in the markdown file.")
 
-# Usage
-markdown_file = input("Enter the markdown file name (with .md extension): ")
-try:
-    unix_time = extract_date_time(markdown_file)
-    print(f"Unix time: {unix_time}")
-except Exception as e:
-    print(e)
+if __name__ == "__main__":
+    markdown_file = input("Enter the markdown file name (with .md extension): ")
+    try:
+        unix_time = extract_date_time(markdown_file)
+        print(f"Unix time: {unix_time}")
+    except ValueError as e:  # Catch specific exception
+        print(e)
+    except Exception as e:  # Keep a broad exception catch for other errors
+        print(e)
+
