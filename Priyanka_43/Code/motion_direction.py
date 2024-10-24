@@ -1,3 +1,6 @@
+"""
+This module calculate the direction of motion from acceleration data.
+"""
 # motion_direction.py
 
 import math
