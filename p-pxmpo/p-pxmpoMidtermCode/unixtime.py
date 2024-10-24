@@ -3,7 +3,6 @@ This module provides functions to extract date and time from a markdown
 file and convert it into Unix time.
 """
 
-import markdown
 import re
 from datetime import datetime
 import time
