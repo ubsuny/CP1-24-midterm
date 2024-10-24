@@ -23,9 +23,9 @@ def haversine(lat1, lon1, lat2, lon2):
     R = 6378137
     return R * c  # Distance in meters
 
-# Example
-lat1, lon1 = , -
-lat2, lon2 = , -
+# Example from VS003_gps_circle.csv
+lat1, lon1 = 4.299989630E1, -7.879087550E1
+lat2, lon2 = 4.300014220E1, -7.879150780E1
 
 distance = haversine(lat1, lon1, lat2, lon2)
 print(f"Distance: {distance} meters")
