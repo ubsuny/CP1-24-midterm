@@ -6,7 +6,8 @@ from a CSV file and compute distances between adjacent coordinates.
 Functions:
 - haversine(latitude1, longitude1, latitude2, longitude2): Calculates the great-circle distance 
   between two points on the Earth specified by their latitude and longitude.
-- read_gps_from_csv(file): Reads GPS coordinates from a CSV file and returns them as a list of tuples.
+- read_gps_from_csv(file): Reads GPS coordinates from a CSV file and returns them as a list 
+  of tuples.
 - calculate_distances(gps_coords): Calculates the distances between adjacent GPS coordinates.
 """
 
@@ -14,7 +15,7 @@ import csv
 import math
 
 # Define Earth's radius in kilometers
-EARTH_RADIUS_KM = 6371.0
+#EARTH_RADIUS_KM = 6371.0
 
 def haversine(latitude1, longitude1, latitude2, longitude2):
     """
@@ -32,17 +33,21 @@ def haversine(latitude1, longitude1, latitude2, longitude2):
     """
 
     # Convert latitude and longitude from degrees to radians
-    latitude1, longitude1, latitude2, longitude2 = map(math.radians, [latitude1, longitude1, latitude2, longitude2])
+    latitude1, longitude1, latitude2, longitude2 = map(
+        math.radians, [latitude1, longitude1, latitude2, longitude2]
+    )
 
-    # Haversine formula
+     # Haversine formula
     dlatitude = latitude2 - latitude1
     dlongitude = longitude2 - longitude1
-    a = math.sin(dlatitude / 2)**2 + math.cos(latitude1) * math.cos(latitude2) * math.sin(dlongitude / 2)**2
+    a = (math.sin(dlatitude / 2)**2 + 
+         math.cos(latitude1) * math.cos(latitude2) * 
+         math.sin(dlongitude / 2)**2)
     c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
 
     # Radius of Earth in kilometers (use 3956 for miles)
-    R = 6371
-    distance = R * c
+    radius_km = 6371
+    distance = radius_km * c
     return distance
 
 def read_gps_from_csv(file):
