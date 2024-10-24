@@ -27,9 +27,8 @@ The following data is obtained from (https://www.msn.com/en-us/weather/hourlyfor
 
 ### Location
 
-Data collection was done at the elevator in Fronczak Hall, 140 Mary Talbert Way, Amherst, NY 14228.
+Data collection was done at Baird Research Park, 1576 Sweet Home Rd, Buffalo, NY 14228.
 
-![image](https://github.com/user-attachments/assets/f83e6aab-95a5-4d5e-bcf7-bb13e949e87b)
+ ![image](https://github.com/user-attachments/assets/c1719c37-247c-4cee-9f3a-d725781f2743)
 
-
-Image obtained from (https://tinyurl.com/Fronczak-Hall).
+ (Image obtained from Google Maps).
