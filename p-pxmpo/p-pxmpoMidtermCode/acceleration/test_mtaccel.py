@@ -8,14 +8,14 @@ This module includes tests for:
 The tests use pytest fixtures to create temporary CSV files and provide sample data
 for testing both functions.
 """
+
+import csv
 import pytest
 import tempfile
-import os
-import csv
 from mtaccelfuncts import read_acceleration, check_direction
 
 @pytest.fixture
-def sample_csv_file():
+def tmp_sample_csv_file():
     """
     Fixture to create a temporary CSV file for testing `read_acceleration`.
     
@@ -48,7 +48,7 @@ def sample_y_values():
     """
     return [0.5, 2.0, -1.5, 0.2]
 
-def test_read_acceleration(sample_csv_file):
+def test_read_acceleration(tmp_sample_csv_file):
     """
     Test for `read_acceleration` function.
     
@@ -57,7 +57,7 @@ def test_read_acceleration(sample_csv_file):
     Args:
         sample_csv_file (str): The path to the temporary CSV file provided by the fixture.
     """
-    y_values = read_acceleration(sample_csv_file)
+    y_values = read_acceleration(tmp_sample_csv_file)
     assert y_values == [0.5, 2.0, -1.5, 0.2]
 
 def test_check_direction_up():

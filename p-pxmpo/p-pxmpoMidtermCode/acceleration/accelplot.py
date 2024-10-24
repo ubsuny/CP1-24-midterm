@@ -51,4 +51,3 @@ except ValueError:
           "Please ensure the CSV file contains valid numeric values.")
 except IOError:
     print(f"Error: There was an issue opening the file '{csv_file_input}'.")
-    
