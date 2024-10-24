@@ -47,6 +47,8 @@ try:
 except FileNotFoundError:
     print(f"Error: The file '{csv_file_input}' was not found.")
 except ValueError:
-    print("Error: There was an issue with the data format. Please ensure the CSV file contains valid numeric values.")
-except Exception as e:
-    print(f"An unexpected error occurred: {e}")
+    print("Error: There was an issue with the data format. "
+          "Please ensure the CSV file contains valid numeric values.")
+except IOError:
+    print(f"Error: There was an issue opening the file '{csv_file_input}'.")
+    
