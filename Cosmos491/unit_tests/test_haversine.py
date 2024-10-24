@@ -1,6 +1,6 @@
 import pytest
 import numpy as np
-from distance_gps_location.py import haversine 
+from code.distance_gps_location.py import haversine 
 
 def test_haversine():
     # Test with known distance between two points (Paris and London)
