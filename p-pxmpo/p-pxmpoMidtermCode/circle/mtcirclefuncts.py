@@ -37,8 +37,8 @@ def haversine(latitude1, longitude1, latitude2, longitude2):
      # Haversine formula
     dlatitude = latitude2 - latitude1
     dlongitude = longitude2 - longitude1
-    a = (math.sin(dlatitude / 2)**2 + 
-         math.cos(latitude1) * math.cos(latitude2) * 
+    a = (math.sin(dlatitude / 2)**2 +
+         math.cos(latitude1) * math.cos(latitude2) *
          math.sin(dlongitude / 2)**2)
     c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
 
@@ -80,4 +80,3 @@ def calculate_distances(gps_coords):
         distance = haversine(lat1, lon1, lat2, lon2)
         distances.append(distance)
     return distances
-

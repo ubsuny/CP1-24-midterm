@@ -10,8 +10,8 @@ for testing both functions.
 """
 
 import csv
-import pytest
 import tempfile
+import pytest
 from mtaccelfuncts import read_acceleration, check_direction
 
 @pytest.fixture
