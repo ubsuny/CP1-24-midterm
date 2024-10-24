@@ -55,7 +55,7 @@ def read_gps_from_csv(file):
     list of tuple: A list of (latitude, longitude) tuples.
     """
     gps_coords = []
-    with open(file, mode='r') as csvfile:
+    with open(file, mode='r', encoding='utf-8') as csvfile:
         csvreader = csv.reader(csvfile)
         next(csvreader)  # Skip the header
         for row in csvreader:
