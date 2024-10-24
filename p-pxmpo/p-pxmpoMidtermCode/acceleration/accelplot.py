@@ -1,13 +1,19 @@
+"""
+This module reads acceleration data from a CSV file and plots acceleration (m/s²) versus time (s).
+
+The CSV file should contain columns for 'time' and 'acceleration'. The plot is generated using matplotlib.
+"""
+
 import pandas as pd
 import matplotlib.pyplot as plt
 import csv
 
-def plot_acceleration(csv_file):
+def plot_acceleration(csv_file_path):
     """
     Plots acceleration (m/s²) vs time (s) from a CSV file.
 
     Args:
-        csv_file (str): The path to the CSV file containing the data.
+        csv_file_path (str): The path to the CSV file containing the data.
                          The CSV should have columns 'time' and 'acceleration'.
     """
     # Initialize lists for time and acceleration
@@ -15,7 +21,7 @@ def plot_acceleration(csv_file):
     acceleration = []
 
     # Read the CSV file using with open
-    with open(csv_file, 'r') as csv_file:
+    with open(csv_file_path, 'r') as csv_file:
         csv_reader = csv.reader(csv_file, delimiter = ',')
         next(csv_reader)
 
