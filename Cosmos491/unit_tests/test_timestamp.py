@@ -1,76 +1,72 @@
+import pytest
 import pandas as pd
 import numpy as np
+from datetime import datetime
+from code.convert_unix_time import add_timestamp_to_data, process_multiple_files  # Ensure correct module import
 
-def add_timestamp_to_data(file_path, start_time_str):
-    """
-    Reads the CSV file with time and acceleration data, and adds full timestamps
-    by calculating them based on the start time using pandas.
-    
-    Parameters:
-    file_path (str): Path to the CSV file.
-    start_time_str (str): The start date and time in the format "YYYY-MM-DD HH:MM:SS".
-    
-    Returns:
-    DataFrame: A DataFrame with the full timestamps and Unix times.
-    """
-    # Read the CSV file
-    df = pd.read_csv(file_path)
+# Mock data for the CSV files using pandas DataFrame
+mock_data = pd.DataFrame({
+    'Time (s)': [0, 1, 2, 3],
+    'Acceleration_x': [0.17, 0.18, 0.20, 0.19],
+    'Acceleration_y': [0.15, 0.16, 0.17, 0.18],
+    'Acceleration_z': [0.00, 0.01, 0.02, 0.01]
+})
 
-    # Convert the start time string to a pandas Timestamp object
-    start_time = pd.to_datetime(start_time_str, format="%Y-%m-%d %H:%M:%S")
-    
-    # Add a new column to the DataFrame for the full timestamp by adding the elapsed time (seconds) to the start time
-    df['timestamp'] = start_time + pd.to_timedelta(df['Time (s)'], unit='s')
-    
-    # Convert the timestamp to Unix time
-    df['unix_time'] = df['timestamp'].astype(np.int64) // 10**9  # Convert to Unix time in seconds
+def test_add_timestamp_to_data():
+    # Save mock_data to a temporary CSV file for testing
+    mock_file = 'mock_data.csv'
+    mock_data.to_csv(mock_file, index=False)
 
-    return df
+    # Expected start time for the test
+    start_time_str = "2024-10-23 17:16:00"
 
-def process_multiple_files(file_paths, start_times):
-    """
-    Process multiple CSV files and convert their time data to full date-time and Unix time.
-    
-    Parameters:
-    file_paths (list of str): List of file paths for the CSV files.
-    start_times (list of str): List of start date-time strings for each corresponding file.
-    
-    Returns:
-    dict: A dictionary where keys are file paths and values are DataFrames with timestamp data.
-    """
-    data_frames = {}
-    
-    # Loop through each file and its corresponding start time
-    for file_path, start_time_str in zip(file_paths, start_times):
-        print(f"Processing {file_path} with start time {start_time_str}")
-        # Process each file and store the result in the dictionary
-        df_with_timestamps = add_timestamp_to_data(file_path, start_time_str)
-        data_frames[file_path] = df_with_timestamps
-        
-        # Optionally, save the DataFrame with timestamps to a new CSV file
-        output_file = file_path.replace('.csv', '_with_timestamps.csv')
-        df_with_timestamps.to_csv(output_file, index=False)
-        print(f"Saved {output_file}")
-    
-    return data_frames
+    # Read the mock CSV and apply the timestamp logic
+    df_with_timestamps = add_timestamp_to_data(mock_file, start_time_str)
 
-# Example usage
+    # Manually calculate expected timestamp and Unix time
+    start_time = datetime.strptime(start_time_str, "%Y-%m-%d %H:%M:%S")
+    expected_timestamps = [
+        start_time,
+        start_time + pd.Timedelta(seconds=1),
+        start_time + pd.Timedelta(seconds=2),
+        start_time + pd.Timedelta(seconds=3)
+    ]
+    expected_unix_times = [int(ts.timestamp()) for ts in expected_timestamps]
 
-# List of CSV file paths (replace with your actual file paths)
-file_paths = [
-    'VS001_acceleration.csv',
-    'VS002_acceleration_return.csv',
-    'VS003_gps_circle.csv',
-    'VS004_gps_triangle.csv'
-]
+    # Verify that the timestamps are correctly calculated
+    assert np.all(df_with_timestamps['timestamp'].values == expected_timestamps)
+    assert np.all(df_with_timestamps['unix_time'].values == expected_unix_times)
 
-# List of start date and time strings corresponding to each file
-start_times = [
-    "2024-10-23 17:16:00",  # Start time for the first file
-    "2024-10-23 17:12:00",  # Start time for the second file
-    "2024-10-24 01:50:00",  # Start time for the third file
-    "2024-10-24 02:30:00",  # Start time for the fourth file
-]
+def test_process_multiple_files():
+    # Mocking multiple CSV files with pandas DataFrame
+    mock_file_1 = 'mock_data_1.csv'
+    mock_file_2 = 'mock_data_2.csv'
+    mock_data.to_csv(mock_file_1, index=False)
+    mock_data.to_csv(mock_file_2, index=False)
 
-# Process the files and convert their time data
-data_frames = process_multiple_files(file_paths, start_times)
+    # Mock file paths and start times
+    file_paths = [mock_file_1, mock_file_2]
+    start_times = [
+        "2024-10-23 17:16:00",
+        "2024-10-23 17:12:00"
+    ]
+
+    # Process the mock data
+    data_frames = process_multiple_files(file_paths, start_times)
+
+    # Verify that timestamps and Unix times are added for both datasets
+    for i, start_time_str in enumerate(start_times):
+        start_time = datetime.strptime(start_time_str, "%Y-%m-%d %H:%M:%S")
+        expected_timestamps = [
+            start_time,
+            start_time + pd.Timedelta(seconds=1),
+            start_time + pd.Timedelta(seconds=2),
+            start_time + pd.Timedelta(seconds=3)
+        ]
+        expected_unix_times = [int(ts.timestamp()) for ts in expected_timestamps]
+
+        df_with_timestamps = data_frames[file_paths[i]]
+
+        # Verify timestamps and Unix time for each row in both datasets
+        assert np.all(df_with_timestamps['timestamp'].values == expected_timestamps)
+        assert np.all(df_with_timestamps['unix_time'].values == expected_unix_times)
