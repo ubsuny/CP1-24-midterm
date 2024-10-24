@@ -6,5 +6,6 @@
 
 ### Unix time
 
+- Time is an illusion, Unix time doubly so. . . (n.d.). https://www.netmeister.org/blog/epoch.html
 - Epoch Converter. (n.d.). Unix Timestamp Converter. https://www.epochconverter.com/
 
