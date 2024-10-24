@@ -31,7 +31,7 @@ def test_haversine():
     lat1, lon1 = 4.299936406E1, -7.879109360E1
     lat2, lon2 = 4.299936473E1, -7.879110473E1
     expected_distance = 0.000908193
-    
+
     distance = haversine(lat1, lon1, lat2, lon2)
     assert math.isclose(distance, expected_distance, abs_tol=0.1)
 
