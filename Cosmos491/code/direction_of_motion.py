@@ -22,8 +22,8 @@ def calculate_direction(acceleration_data):
 
 # Example using PhyPhox
 acceleration_data = [
-    [1.027989984E-1	9.331600368E-2	-6.961200237E-1],  # ax, ay, az for time t1
-    [3.441699967E-2	-8.970600367E-2	-1.392800063E-1],  # ax, ay, az for time t2
+    [1.027989984E-1,	9.331600368E-2,	-6.961200237E-1],  # ax, ay, az for time t1
+    [3.441699967E-2,	-8.970600367E-2,	-1.392800063E-1],  # ax, ay, az for time t2
 ]
 
 directions = calculate_direction(acceleration_data)
