@@ -1,3 +1,6 @@
+"""
+This module contains functions for converting distances between feet, yards, and meters.
+"""
 def feet_to_meters(feet):
     """
     Converts a distance from feet to meters.
