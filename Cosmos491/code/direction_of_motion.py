@@ -19,3 +19,12 @@ def calculate_direction(acceleration_data):
             direction = (0, 0, 0)
         directions.append(direction)
     return directions
+
+# Example using PhyPhox
+acceleration_data = [
+    [-0.0635470003, 0.0851109996, 0.0279709995],  # ax, ay, az for time t1
+    [-0.103995003, 0.151657999, -0.0222859997],  # ax, ay, az for time t2
+]
+
+directions = calculate_direction(acceleration_data)
+print(directions)  # This will give the direction vectors over time
