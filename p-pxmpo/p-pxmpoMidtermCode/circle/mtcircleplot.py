@@ -34,8 +34,10 @@ try:
     plt.show()
 
 except FileNotFoundError:
-    print(f"Error: The file '{file_name}' was not found. Please check the filename and try again.")
+    print(f"Error: The file '{file_name}' was not found. Please check the filename "
+           "and try again.")
 except ValueError:
-    print("Error: Could not convert data to float. Please ensure the CSV file contains valid numbers.")
+    print("Error: Could not convert data to float. Please ensure the CSV file "
+          "contains valid numbers.")
 except OSError as e:
     print(f"Error: An OS error occurred: {e}")
