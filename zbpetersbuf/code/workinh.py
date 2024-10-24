@@ -1,7 +1,6 @@
 """
-
-import matplotlib.pyplot as plt
-import os
+workinh.py
+this moduale contains all the relevent code for walking gps data collection and ploting for these equations work for both the circle and the triangel
 
 for the test the horizontal accuracy was 4.7 m, and verticle accuracy was 3.4
 """
@@ -50,10 +49,6 @@ def walkeq(walkdt):
         s[i+1]=((1-(np.radians(1/(298.257))))*np.radians(6378140))*biga*(sig-dsig)
     return s
 
-walk = pd.read_csv('/workspaces/CP1-24-midterm/zbpetersbuf/data/LL07_circle.csv')
-exmp = walkeq(walk)
-print(sum(exmp))
-
 def distbetp(dta,a):
     """for this function if you wasnt to know the distance between two data
     coleced points only enter the smaller nemuber in 'a'
@@ -61,8 +56,6 @@ def distbetp(dta,a):
     b = a-1
     b = max(b,0)
     return dta[b]
-
-print(distbetp(exmp,2))
 
 def gpsloc(datta):
     """this function takes the walking data and converts it for the plwalk function to then plot"""
@@ -101,9 +94,3 @@ def plwalk(vel):
             print(f"Plot saved as {filpath}")
     else:
         print("Plot not saved.")
-
-walk = pd.read_csv('/workspaces/CP1-24-midterm/zbpetersbuf/data/LL07_circle.csv')
-
-examp2 = gpsloc(walk)
-
-plwalk(examp2)
