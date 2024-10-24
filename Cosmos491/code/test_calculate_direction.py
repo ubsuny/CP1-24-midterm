@@ -1,8 +1,15 @@
+"""
+This module tests the `calculate_direction` function for correctness.
+"""
 import pytest
 import numpy as np
 from direction_of_motion import calculate_direction  # Replace 'your_module' with your actual module name
 
 def test_calculate_direction():
+    """
+    Tests the `calculate_direction` function with example acceleration data and compares
+    the resulting directions to expected values.
+    """
     # Example acceleration data
     acceleration_data = [
         [0.17, 0.15, 0.00],  # Test with real values
