@@ -3,7 +3,6 @@ This script reads latitude and longitude data from a CSV file and plots the
 coordinates on a scatter plot using Matplotlib. If the specified file is not
 found, an error message will be displayed.
 """
-import pandas as pd
 import csv
 import matplotlib.pyplot as plt
 
