@@ -1,38 +1,76 @@
 import pandas as pd
-from datetime import datetime
+from datetime import datetime, timedelta
 
-def convert_to_unix_time_from_csv(file_path):
+def add_timestamp_to_data(file_path, start_time_str):
     """
-    Reads date and time from a CSV file and converts it to Unix time.
-
+    Reads the CSV file with time and acceleration data, and adds full timestamps
+    by calculating them based on the start time.
+    
     Parameters:
     file_path (str): Path to the CSV file.
-
+    start_time_str (str): The start date and time in the format "YYYY-MM-DD HH:MM:SS".
+    
     Returns:
-    list: A list of Unix timestamps corresponding to the date and time in the file.
+    DataFrame: A DataFrame with the full timestamps and Unix times.
     """
     # Read the CSV file
     df = pd.read_csv(file_path)
     
-    # Combine the Date and Time columns into a single datetime string
-    df['datetime'] = df['Date'] + ' ' + df['Time']
+    # Convert the start time string to a datetime object
+    start_time = datetime.strptime(start_time_str, "%Y-%m-%d %H:%M:%S")
     
-    # Convert the datetime string to a datetime object and then to Unix time
-    df['unix_time'] = df['datetime'].apply(lambda x: int(datetime.strptime(x, "%Y-%m-%d %H:%M:%S").timestamp()))
+    # Add a new column to the DataFrame for the full timestamp
+    df['timestamp'] = df['Time (s)'].apply(lambda t: start_time + timedelta(seconds=t))
     
-    return df[['datetime', 'unix_time']]  # Return the datetime and Unix time columns
+    # Convert the timestamp to Unix time
+    df['unix_time'] = df['timestamp'].apply(lambda x: int(x.timestamp()))
+    
+    return df
 
-# List of all CSV files
+def process_multiple_files(file_paths, start_times):
+    """
+    Process multiple CSV files and convert their time data to full date-time and Unix time.
+    
+    Parameters:
+    file_paths (list of str): List of file paths for the CSV files.
+    start_times (list of str): List of start date-time strings for each corresponding file.
+    
+    Returns:
+    dict: A dictionary where keys are file paths and values are DataFrames with timestamp data.
+    """
+    data_frames = {}
+    
+    # Loop through each file and its corresponding start time
+    for file_path, start_time_str in zip(file_paths, start_times):
+        print(f"Processing {file_path} with start time {start_time_str}")
+        # Process each file and store the result in the dictionary
+        df_with_timestamps = add_timestamp_to_data(file_path, start_time_str)
+        data_frames[file_path] = df_with_timestamps
+        
+        # Optionally, save the DataFrame with timestamps to a new CSV file
+        output_file = file_path.replace('.csv', '_with_timestamps.csv')
+        df_with_timestamps.to_csv(output_file, index=False)
+        print(f"Saved {output_file}")
+    
+    return data_frames
+
+# Example usage
+
+# List of CSV file paths (replace with your actual file paths)
 file_paths = [
-    'VS001_acceleration.csv', 
+    'VS001_acceleration.csv',
     'VS002_acceleration_return.csv',
     'VS003_gps_circle.csv',
     'VS004_gps_triangle.csv'
 ]
 
-# Loop through each file, convert the date and time to Unix time, and print the result
-for file_path in file_paths:
-    unix_time_data = convert_to_unix_time_from_csv(file_path)
-    print(f"Unix Time Data for {file_path}:")
-    print(unix_time_data)
-    print('-' * 50)  # Separator for better readability
+# List of start date and time strings corresponding to each file
+start_times = [
+    "2024-10-24 14:00:00",  # Start time for the first file
+    "2024-10-24 14:15:00",  # Start time for the second file
+    "2024-10-24 14:30:00",  # Start time for the third file
+    "2024-10-24 14:45:00"   # Start time for the fourth file
+]
+
+# Process the files and convert their time data
+data_frames = process_multiple_files(file_paths, start_times)
