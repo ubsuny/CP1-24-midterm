@@ -34,22 +34,24 @@ class TripBase:
     This class is not meant to be used directly. Instead you should use either
     the GpsTrip or AccelTrip classes.
     """
-    def __init__(self, csv_name):
+    def __init__(self, csv_unzip_name):
         """
         Initializes the TripBase class by importing trip data and metadata from
         CSV files.
 
         Args:
-            csv_name (str): Name of the CSV file (without extension) that contains trip data.
+            csv_name (str): Name of the folder with CSV file that is named
+            "Raw Data.csv". If you unzip PhyFox data export (as a complete dir),
+            this will be the name of the new directory.
         """
         # Ensure that the directory path ends with a slash
-        if not csv_name.endswith('/'):
-            csv_dir = '../data/' + csv_name + '/'  # Directory path
+        if not csv_unzip_name.endswith('/'):
+            csv_dir = '../data/' + csv_unzip_name + '/'  # Directory path
         else:
-            csv_dir = '../data/' + csv_name        # Directory path
+            csv_dir = '../data/' + csv_unzip_name        # Directory path
 
         # Prepare the csv paths
-        csv_path = csv_dir + csv_name + '.csv'                 # Filename
+        csv_path = csv_dir + "Raw Data" + '.csv'                 # Filename
         csv_meta_path = csv_dir + '/meta/time.csv'  # Meta name
 
         # initilize the times dict
@@ -157,6 +159,7 @@ class TripBase:
         """
         trip_type = self.trip_type
         start_time_utc = self.times['start_time_utc'] if self.times['start_time_utc'] else 'Unknown'
+        start_time_unix = self.times['start_time_unix'] if self.times['start_time_unix'] else 'Unknown'
         duration = self.times['duration'] if self.times['duration'] is not None else 'Unknown'
         num_frames = len(self.__raw_frame) if self.__raw_frame is not None else 0
 
@@ -164,6 +167,7 @@ class TripBase:
             f"Trip Summary:\n"
             f"Type of trip: {trip_type}\n"
             f"Start time (UTC): {start_time_utc}\n"
+            f"Start time (Unix): {start_time_unix}\n"
             f"Duration: {duration} seconds\n"
             f"Number of frames: {num_frames}"
         )
@@ -250,9 +254,12 @@ class GpsTrip(TripBase):
         df['Latitude_next'] = df['Latitude (°)'].shift(-1)
         df['Longitude_next'] = df['Longitude (°)'].shift(-1)
         df['Altitude_next'] = df['Altitude (m)'].shift(-1)
+        df['Time_next'] = df['Time (s)'].shift(-1)
 
         # Drop the last row, as it will have NaN values due to shifting
-        df = df.dropna(subset=['Latitude_next', 'Longitude_next', 'Altitude_next'])
+        df = df.dropna(
+            subset=['Latitude_next', 'Longitude_next', 'Altitude_next', 'Time_next']
+        )
 
 
         # Calculate Latitude and Longitude displacements
@@ -288,22 +295,32 @@ class GpsTrip(TripBase):
         # Create the segments DataFrame with start point, end point, planar
         # distance, and curved distance
         segments = pd.DataFrame({
-            'Start_Latitude (°)': df['Latitude (°)'],
-            'Start_Longitude (°)': df['Longitude (°)'],
-            'Start_Altitude (m)': df['Altitude (m)'],
-            'End_Latitude (°)': df['Latitude_next'],
-            'End_Longitude (°)': df['Longitude_next'],
-            'End_Altitude (m)': df['Altitude_next'],
-            # Displacement for Latitude
-            'Latitude_Displacement (°)': df['Latitude_Displacement'],
-            # Displacement for Longitude
-            'Longitude_Displacement (°)': df['Longitude_Displacement'],
+            # units of s
+            'start_t': df['Time (s)'],
+            # units of s
+            'stop_t': df['Time_next'],
+            # units of degrees
+            'start_lat': df['Latitude (°)'],
+            # units of degrees
+            'start_long': df['Longitude (°)'],
+            # units of meters
+            'start_alt': df['Altitude (m)'],
+            # units of degrees
+            'end_lat': df['Latitude_next'],
+            # units of degrees
+            'end_long': df['Longitude_next'],
+            # units of meters
+            'end_alt': df['Altitude_next'],
+            # Displacement for Latitude, degrees
+            'lat_delta': df['Latitude_Displacement'],
+            # Displacement for Longitude. degrees
+            'long_delta': df['Longitude_Displacement'],
             # Euclidean distance in degrees
-            'Degree_Distance (°)': df['Degree_Distance'],
+            'degree_distance': df['Degree_Distance'],
             # Planar distance in meters
-            'Planar_Distance (m)': df['Planar_Distance'],
+            'planar_distance': df['Planar_Distance'],
             # 3D distance in meters
-            'Curved_Distance (m)': df['Curved_Distance']
+            'curved_distance': df['Curved_Distance']
         })
 
         return segments
@@ -322,7 +339,6 @@ class AccelTrip(TripBase):
         data (DataFrame): A DataFrame holding specific accelerometer data (e.g.,
         time, x, y, z axes).
     """
-
     def __init__(self, csv_name):
         """
         Initializes the AccelTrip class by calling the base class initializer
@@ -342,7 +358,7 @@ class AccelTrip(TripBase):
 
         # Stub out the accelerometer data for now
         self.data = self.extract_accel_data()
-        self.segments = None
+        self.segments = self.calculate_segments()
 
     def extract_accel_data(self):
         """
@@ -395,29 +411,101 @@ class AccelTrip(TripBase):
             return None
 
     def calculate_segments(self):
-        """
-        Stub method to calculate segments based on accelerometer data.
-        This method will be implemented later.
+         """
+         Calculates segments from the accelerometer data, including start and stop times,
+         delta time, average accelerations, velocity, and position for each segment.
+         """
+         # Check if the data has been extracted
+         if self.data is None:
+             print("Error: No accelerometer data available.")
+             return None
 
-        Returns:
-            None: For now, this method is a stub.
-        """
-        print("Stub: calculate_segments will be implemented later.")
-        return None
+         df = self.data.copy()
 
-    def report_trip_summary(self):
-        """
-        Overrides the report_trip_summary method to include accelerometer-
-        specific details.
-        Currently stubs out the implementation.
+         # Shift the time column to calculate the stop time for each segment
+         df['time_next'] = df['time'].shift(-1)
 
-        Returns:
-            str: A formatted string containing the trip type and stub message.
-        """
-        base_summary = super().report_trip_summary()
-        accel_status = "Not yet available (stub method)"
+         # Drop the last row since it will have NaN values after shifting
+         df = df.dropna(subset=['time_next'])
 
-        return (
-            f"{base_summary}\n"
-            f"Accelerometer Data: {accel_status}"
-        )
+         # Calculate delta_t (duration of each segment) using relative times
+         df['delta_t'] = df['time_next'] - df['time']
+
+         # Calculate average accelerations for each segment
+         df['avg_accel_x'] = (df['accel_x'] + df['accel_x'].shift(-1)) / 2
+         df['avg_accel_y'] = (df['accel_y'] + df['accel_y'].shift(-1)) / 2
+         df['avg_accel_z'] = (df['accel_z'] + df['accel_z'].shift(-1)) / 2
+
+         # Initialize velocities and positions (start from zero)
+         initial_velocity_x, initial_velocity_y, initial_velocity_z = 0, 0, 0
+         initial_position_x, initial_position_y, initial_position_z = 0, 0, 0
+
+         velocities_x, velocities_y, velocities_z = [], [], []
+         positions_x, positions_y, positions_z = [], [], []
+
+         # Calculate velocity and position for each segment using relative delta_t
+         for index, row in df.iterrows():
+             delta_t = row['delta_t']
+
+             # Calculate velocity for this segment (using relative times)
+             delta_v_x = row['avg_accel_x'] * delta_t
+             delta_v_y = row['avg_accel_y'] * delta_t
+             delta_v_z = row['avg_accel_z'] * delta_t
+
+             velocity_x = initial_velocity_x + delta_v_x
+             velocity_y = initial_velocity_y + delta_v_y
+             velocity_z = initial_velocity_z + delta_v_z
+
+             # Store the velocity
+             velocities_x.append(velocity_x)
+             velocities_y.append(velocity_y)
+             velocities_z.append(velocity_z)
+
+             # Calculate position for this segment (using relative times)
+             delta_x = initial_velocity_x * delta_t + 0.5 * row['avg_accel_x'] * (delta_t ** 2)
+             delta_y = initial_velocity_y * delta_t + 0.5 * row['avg_accel_y'] * (delta_t ** 2)
+             delta_z = initial_velocity_z * delta_t + 0.5 * row['avg_accel_z'] * (delta_t ** 2)
+
+             position_x = initial_position_x + delta_x
+             position_y = initial_position_y + delta_y
+             position_z = initial_position_z + delta_z
+
+             # Store the position
+             positions_x.append(position_x)
+             positions_y.append(position_y)
+             positions_z.append(position_z)
+
+             # Update the initial velocity and position for the next iteration
+             initial_velocity_x = velocity_x
+             initial_velocity_y = velocity_y
+             initial_velocity_z = velocity_z
+
+             initial_position_x = position_x
+             initial_position_y = position_y
+             initial_position_z = position_z
+
+         # Add velocity and position columns to the DataFrame
+         df['velocity_x'] = velocities_x
+         df['velocity_y'] = velocities_y
+         df['velocity_z'] = velocities_z
+         df['position_x'] = positions_x
+         df['position_y'] = positions_y
+         df['position_z'] = positions_z
+
+         # Create and return the segments DataFrame
+         segments = pd.DataFrame({
+             'start_t': df['time'],
+             'stop_t': df['time_next'],
+             'delta_t': df['delta_t'],
+             'avg_accel_x': df['avg_accel_x'],
+             'avg_accel_y': df['avg_accel_y'],
+             'avg_accel_z': df['avg_accel_z'],
+             'velocity_x': df['velocity_x'],
+             'velocity_y': df['velocity_y'],
+             'velocity_z': df['velocity_z'],
+             'position_x': df['position_x'],
+             'position_y': df['position_y'],
+             'position_z': df['position_z']
+         })
+
+         return segments
