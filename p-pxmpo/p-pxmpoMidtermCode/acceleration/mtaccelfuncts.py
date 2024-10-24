@@ -21,7 +21,7 @@ def read_acceleration(file):
     """
 
     y_values = []
-    with open(file, mode='r') as csvfile:
+    with open(file, mode='r', encoding='utf-8') as csvfile:
         csv_reader = csv.reader(csvfile)
         next(csv_reader)  # Skip the header
         for row in csv_reader:
