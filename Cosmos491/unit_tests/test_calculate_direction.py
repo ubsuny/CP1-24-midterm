@@ -1,6 +1,6 @@
 import pytest
 import numpy as np
-from your_module import calculate_direction  # Replace 'your_module' with your actual module name
+from direction_of_motion.py import calculate_direction  # Replace 'your_module' with your actual module name
 
 def test_calculate_direction():
     # Example acceleration data
