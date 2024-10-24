@@ -22,7 +22,7 @@ def plot_acceleration(csv_file_path):
     acceleration = []
 
     # Read the CSV file using with open
-    with open(csv_file_path, 'r') as csv_file:
+    with open(csv_file_path, 'r', encoding='utf-8') as csv_file:
         csv_reader = csv.reader(csv_file, delimiter = ',')
         next(csv_reader)
 
@@ -45,5 +45,9 @@ def plot_acceleration(csv_file_path):
 csv_file_input = input("Enter the path to the CSV file: ")
 try:
     plot_acceleration(csv_file_input)
+except FileNotFoundError:
+    print(f"Error: The file '{csv_file_input}' was not found.")
+except ValueError:
+    print("Error: There was an issue with the data format. Please ensure the CSV file contains valid numeric values.")
 except Exception as e:
-    print(e)
+    print(f"An unexpected error occurred: {e}")
