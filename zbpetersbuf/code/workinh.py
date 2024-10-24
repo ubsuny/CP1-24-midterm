@@ -63,3 +63,10 @@ def distbetp(dta,a):
     return dta[b]
 
 print(distbetp(exmp,2))
+
+def gpsloc(data):
+    """docstring type words here the following algotrith ADD REFRENCES HERE"""
+
+    lalo = list(zip(data.loc[:, 'Latitude (°)'], data.loc[:, 'Longitude (°)']))
+
+    
