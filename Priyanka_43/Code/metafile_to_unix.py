@@ -1,4 +1,8 @@
-    # metafile_to_unix.py
+"""
+This module convers metafile to unix time.
+"""
+
+# metafile_to_unix.py
 
 def convert_to_unix(file_path):
     """
