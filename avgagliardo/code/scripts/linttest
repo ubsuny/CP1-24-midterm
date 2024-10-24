@@ -1,0 +1,1 @@
+alias linttest='function _linttest() { pylint "$1"; pytest "$1"; }; _linttest'
