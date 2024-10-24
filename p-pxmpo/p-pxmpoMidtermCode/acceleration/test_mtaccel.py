@@ -29,13 +29,13 @@ def tmp_sample_csv_file():
         ["2", "0", "-1.5", "0"],
         ["3", "0", "0.2", "0"]
     ]
-    
+
     # Using tempfile to create a temporary CSV file
     with tempfile.NamedTemporaryFile(mode='w', delete=False, newline='') as temp_file:
         writer = csv.writer(temp_file)
         writer.writerows(data)
         temp_file_name = temp_file.name
-    
+
     yield temp_file_name
 
 @pytest.fixture
