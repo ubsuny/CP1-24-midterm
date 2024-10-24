@@ -32,5 +32,5 @@ file_input = input("Please enter the CSV file name (including .csv extension): "
 if not os.path.isfile(file_input):
     print(f"Error: The file '{file_input}' was not found.")
 else:
-    result = calculate_dir(file_input)
-    print("The direction of acceleration is", result)
+    acceleration_direction = calculate_dir(file_input)
+    print("The direction of acceleration is", acceleration_direction)
