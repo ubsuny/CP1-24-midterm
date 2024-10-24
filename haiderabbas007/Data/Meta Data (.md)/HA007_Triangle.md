@@ -8,7 +8,6 @@
 | End            | 2024-10-23             | 17:29:32.628 UTC-04:00       |
 
 
-
 ### Weather Conditions:
 
 The following data is obtained from (https://www.msn.com/en-us/weather/hourlyforecast).
