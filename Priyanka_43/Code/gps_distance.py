@@ -1,6 +1,5 @@
 """
-This module Calculate the great-circle distance between two points
-    on the Earth (specified in decimal degrees)
+This module Calculate the great-circle distance between two points on the Earth.
 """  
 # gps_distance.py
 
