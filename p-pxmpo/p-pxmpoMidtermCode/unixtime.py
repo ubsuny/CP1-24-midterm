@@ -44,11 +44,11 @@ def extract_date_time(markdown_file):
 if __name__ == "__main__":
     input_markdown_file = input("Enter the markdown file name (with .md extension): ")
     try:
-        unix_time = extract_date_time(markdown_file)
+        unix_time = extract_date_time(input_markdown_file )
         print(f"Unix time: {unix_time}")
     except ValueError as e:  # Catch specific exception for ValueError
         print(e)
     except FileNotFoundError:  # Handle case where the file does not exist
-        print(f"Error: The file '{markdown_file}' was not found.")
-    except OSError as e:  # Handle other OS-related errors (e.g., permissions)
+        print(f"Error: The file '{input_markdown_file }' was not found.")
+    except OSError as e:  # Handle other OS-related errors
         print(f"Error: {e}")
