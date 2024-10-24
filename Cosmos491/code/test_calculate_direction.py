@@ -2,7 +2,6 @@
 This module tests the `calculate_direction` function for correctness.
 """
 import pytest
-import numpy as np
 from direction_of_motion import calculate_direction  # Replace 'your_module' with your actual module name
 
 def test_calculate_direction():
