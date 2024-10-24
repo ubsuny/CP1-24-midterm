@@ -1,12 +1,11 @@
 import numpy as np
 import unit_converter
 import pandas as pd
-
+ 
 def get_coords(d,xy,i):
-    if i!=0:
-        xy+=get_coords(d, d[i], i-1)
     if i==0:
         return xy
+    return (xy+get_coords(d, d[i-1], i-1))
 
 def diff(lat1,lat2, lon1,lon2):
     lat1, lat2=lat1*364000,lat2*364000
