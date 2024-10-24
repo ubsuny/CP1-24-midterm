@@ -248,6 +248,92 @@ def plot_gpstrip_segments_with_color(gps_trip):
     plt.grid(True)
     plt.show()
 
+def plot_acceltrip_acceleration_with_color(accel_trip,
+                                            component='total',
+                                            compression_factor=1.0,
+                                            connect_points=True,
+                                            step=1):
+    """
+    Plots the specified acceleration component (x, y, z, or total) of an AccelTrip object over time,
+    with color representing the direction and magnitude of acceleration. Red indicates higher positive acceleration,
+    and purple indicates lower or negative acceleration.
+
+    Args:
+        accel_trip (AccelTrip): An AccelTrip object with segment data containing time and acceleration components.
+        component (str): The acceleration component to plot ('x', 'y', 'z', or 'total'). Defaults to 'total'.
+        compression_factor (float): Factor to compress the center of the color spectrum. Defaults to 1.0.
+        connect_points (bool): Whether to connect points with lines. Defaults to True.
+        step (int): Plot every Nth point to reduce the number of points displayed. Defaults to 1 (plot all points).
+
+    Returns:
+        None: Displays the plot using Matplotlib.
+    """
+    if accel_trip.segments is None:
+        print("Error: No segment data available to plot.")
+        return
+
+    segments = accel_trip.segments
+
+    # Determine which acceleration component to plot
+    if component == 'x':
+        accel_column = 'accel_x'
+    elif component == 'y':
+        accel_column = 'accel_y'
+    elif component == 'z':
+        accel_column = 'accel_z'
+    elif component == 'total':
+        accel_column = 'total_acceleration'
+    else:
+        print(f"Error: Invalid component '{component}'. Must be 'x', 'y', 'z', or 'total'.")
+        return
+
+    # Check if the necessary columns exist in the segments DataFrame
+    if not {'start_t', accel_column}.issubset(segments.columns):
+        print(f"Error: Missing time or {component}-acceleration data in segments.")
+        return
+
+    # Extract time and the chosen acceleration component, using step to downsample data
+    times = segments['start_t'].values[::step]
+    acceleration = segments[accel_column].values[::step]
+
+    # Apply compression to the acceleration values to broaden the color spectrum
+    compressed_acceleration = np.sign(acceleration) * (np.abs(acceleration) ** (1 / compression_factor))
+
+    # Normalize the compressed acceleration values for color mapping
+    norm = plt.Normalize(compressed_acceleration.min(), compressed_acceleration.max())
+
+    # Create the color map (from purple to red)
+    cmap = plt.cm.nipy_spectral
+
+    # Create the plot
+    plt.figure(figsize=(10, 6))
+
+    # Optionally connect points with lines
+    if connect_points:
+        plt.plot(times, acceleration, color='gray', alpha=0.7, label=f'{component.capitalize()} Acceleration')
+
+    # Plot points with color representing the acceleration magnitude and direction
+    sc = plt.scatter(times, acceleration, c=compressed_acceleration, cmap=cmap, norm=norm, marker='o')
+
+    # Create colorbar to indicate acceleration magnitude and direction
+    cbar = plt.colorbar(sc)
+    cbar.set_label(f'Scaled {component.capitalize()} Acceleration (m/s²)')
+
+    # Label the axes
+    plt.xlabel('Time (s)')
+    plt.ylabel(f'{component.capitalize()} Acceleration (m/s²)')
+    plt.title(f'{component.capitalize()} Acceleration over Time for AccelTrip (Colored by Acceleration Direction)')
+
+    # Add grid and legend
+    plt.grid(True)
+
+    if connect_points is True:
+        plt.legend()
+
+    # Show the plot
+    plt.show()
+
+
 def plot_acceltrip_velocity(accel_trip, component='z'):
     """
     Plots the specified velocity component (x, y, or z) of an AccelTrip object over time.
@@ -291,7 +377,7 @@ def plot_acceltrip_velocity(accel_trip, component='z'):
     # Show the plot
     plt.show()
 
-def plot_acceltrip_velocity_with_acceleration_color(accel_trip, component='z', compression_factor=1.0):
+def plot_acceltrip_velocity_with_acceleration_color(accel_trip, component='z', compression_factor=1.0, step=10):
     """
     Plots the specified velocity component (x, y, or z) of an AccelTrip object over time, with color representing
     the direction of acceleration. Red indicates positive acceleration, and purple indicates negative acceleration.
@@ -303,6 +389,7 @@ def plot_acceltrip_velocity_with_acceleration_color(accel_trip, component='z', c
         accel_trip (AccelTrip): An AccelTrip object with segment data containing time and velocity components.
         component (str): The velocity component to plot ('x', 'y', or 'z'). Defaults to 'z'.
         compression_factor (float): Factor to compress the center of the color spectrum. Defaults to 1.0.
+        step (int): Downsampling factor, plotting every Nth point. Defaults to 10.
 
     Returns:
         None: Displays the plot using Matplotlib.
@@ -320,8 +407,8 @@ def plot_acceltrip_velocity_with_acceleration_color(accel_trip, component='z', c
         return
 
     # Extract the time and chosen velocity columns
-    times = segments['start_t'].values
-    velocity = segments[velocity_column].values
+    times = segments['start_t'].values[::step]  # Downsample by selecting every Nth point
+    velocity = segments[velocity_column].values[::step]
 
     # Calculate the change in velocity (acceleration) between consecutive points
     acceleration = np.diff(velocity, prepend=velocity[0])
@@ -338,6 +425,9 @@ def plot_acceltrip_velocity_with_acceleration_color(accel_trip, component='z', c
     # Create the plot
     plt.figure(figsize=(10, 6))
 
+    # Plot lines between points
+    plt.plot(times, velocity, color='gray', alpha=0.7, label=f'{component.upper()}-Velocity')
+
     # Use scatter to plot points with colors based on the compressed acceleration direction
     sc = plt.scatter(times, velocity, c=compressed_acceleration, cmap=cmap, norm=norm, marker='o')
 
@@ -350,20 +440,18 @@ def plot_acceltrip_velocity_with_acceleration_color(accel_trip, component='z', c
     plt.ylabel(f'{component.upper()}-Velocity (m/s)')
     plt.title(f'{component.upper()}-Velocity over Time for AccelTrip (Colored by Acceleration Direction)')
 
-    # Add grid
+    # Add grid and legend
     plt.grid(True)
+    plt.legend()
 
     # Show the plot
     plt.show()
 
-import matplotlib.pyplot as plt
-import numpy as np
-from mpl_toolkits.mplot3d import Axes3D
-
 def plot_3d_trajectory(accel_trip):
     """
     Plots the 3D trajectory of an AccelTrip object using cumulative sums of the velocity components to approximate position.
-    The color of the trajectory represents the time progression.
+    The color of the trajectory represents the time progression. The axes are normalized so that the axis with the largest
+    range determines the scale for all axes.
 
     Args:
         accel_trip (AccelTrip): An AccelTrip object with segment data containing velocity components.
@@ -393,6 +481,19 @@ def plot_3d_trajectory(accel_trip):
     positions_y = np.cumsum(velocity_y * np.diff(times, prepend=times[0]))
     positions_z = np.cumsum(velocity_z * np.diff(times, prepend=times[0]))
 
+    # Find the ranges of each axis
+    x_range = positions_x.max() - positions_x.min()
+    y_range = positions_y.max() - positions_y.min()
+    z_range = positions_z.max() - positions_z.min()
+
+    # Determine the largest range
+    max_range = max(x_range, y_range, z_range)
+
+    # Normalize all axes to use the same scale based on the largest range
+    positions_x_normalized = (positions_x - positions_x.min()) / x_range * max_range
+    positions_y_normalized = (positions_y - positions_y.min()) / y_range * max_range
+    positions_z_normalized = (positions_z - positions_z.min()) / z_range * max_range
+
     # Normalize time for color mapping
     norm = plt.Normalize(times.min(), times.max())
 
@@ -401,17 +502,20 @@ def plot_3d_trajectory(accel_trip):
     ax = fig.add_subplot(111, projection='3d')
 
     # Plot the 3D trajectory, coloring by time
-    sc = ax.scatter(positions_x, positions_y, positions_z, c=times, cmap='plasma', norm=norm)
+    sc = ax.scatter(positions_x_normalized, positions_y_normalized, positions_z_normalized, c=times, cmap='plasma', norm=norm)
 
     # Add colorbar to indicate time progression
     cbar = plt.colorbar(sc, ax=ax)
     cbar.set_label('Time (s)')
 
-    # Label the axes
-    ax.set_xlabel('X Position (m)')
-    ax.set_ylabel('Y Position (m)')
-    ax.set_zlabel('Z Position (m)')
-    ax.set_title('3D Trajectory of Object Through Space')
+    # Label the axes with normalization indicated
+    ax.set_xlabel('X Position (normalized)')
+    ax.set_ylabel('Y Position (normalized)')
+    ax.set_zlabel('Z Position (normalized)')
+    ax.set_title('Normalized 3D Trajectory of Object Through Space')
+
+    # Set equal scale for all axes
+    ax.set_box_aspect([1, 1, 1])  # Equal aspect ratio
 
     # Show the plot
     plt.show()

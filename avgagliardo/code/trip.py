@@ -339,7 +339,7 @@ class AccelTrip(TripBase):
         data (DataFrame): A DataFrame holding specific accelerometer data (e.g.,
         time, x, y, z axes).
     """
-    def __init__(self, csv_name):
+    def __init__(self, csv_name, accel_thresholds = {'lower': 1e-8, 'upper': 10.0}):
         """
         Initializes the AccelTrip class by calling the base class initializer
         to handle
@@ -358,7 +358,8 @@ class AccelTrip(TripBase):
 
         # Stub out the accelerometer data for now
         self.data = self.extract_accel_data()
-        self.segments = self.calculate_segments()
+
+        self.segments = self.calculate_segments(accel_thresholds)
 
     def extract_accel_data(self):
         """
@@ -410,102 +411,80 @@ class AccelTrip(TripBase):
             print("Error: Raw frame is empty.")
             return None
 
-    def calculate_segments(self):
-         """
-         Calculates segments from the accelerometer data, including start and stop times,
-         delta time, average accelerations, velocity, and position for each segment.
-         """
-         # Check if the data has been extracted
-         if self.data is None:
-             print("Error: No accelerometer data available.")
-             return None
+    def calculate_segments(self, accel_thresholds=None, velocity_thresholds=None):
+        """
+        Calculates segments from the accelerometer data, including start and stop times,
+        delta time, raw accelerations, and velocity for each segment, with optional thresholding
+        for acceleration and velocity.
 
-         df = self.data.copy()
+        Args:
+            accel_thresholds (dict): A dictionary containing 'lower' and 'upper' keys for acceleration thresholds.
+                                     Example: {'lower': 0.5, 'upper': 2.0}
+            velocity_thresholds (dict): A dictionary containing 'lower' and 'upper' keys for velocity thresholds.
+                                        Example: {'lower': -5, 'upper': 5}
 
-         # Shift the time column to calculate the stop time for each segment
-         df['time_next'] = df['time'].shift(-1)
+        Returns:
+            DataFrame: Segments data with filtered acceleration and velocity based on thresholds.
+        """
+        if self.data is None:
+            print("Error: No accelerometer data available.")
+            return None
 
-         # Drop the last row since it will have NaN values after shifting
-         df = df.dropna(subset=['time_next'])
+        df = self.data.copy()
 
-         # Calculate delta_t (duration of each segment) using relative times
-         df['delta_t'] = df['time_next'] - df['time']
+        # Shift the time column to calculate the stop time for each segment
+        df['time_next'] = df['time'].shift(-1)
 
-         # Calculate average accelerations for each segment
-         df['avg_accel_x'] = (df['accel_x'] + df['accel_x'].shift(-1)) / 2
-         df['avg_accel_y'] = (df['accel_y'] + df['accel_y'].shift(-1)) / 2
-         df['avg_accel_z'] = (df['accel_z'] + df['accel_z'].shift(-1)) / 2
+        # Drop the last row since it will have NaN values after shifting
+        df = df.dropna(subset=['time_next'])
 
-         # Initialize velocities and positions (start from zero)
-         initial_velocity_x, initial_velocity_y, initial_velocity_z = 0, 0, 0
-         initial_position_x, initial_position_y, initial_position_z = 0, 0, 0
+        # Calculate delta_t (duration of each segment) using relative times
+        df['delta_t'] = df['time_next'] - df['time']
 
-         velocities_x, velocities_y, velocities_z = [], [], []
-         positions_x, positions_y, positions_z = [], [], []
+        # Filter out rows where delta_t is too small (this ensures stable integration)
+        df = df[df['delta_t'] > 1e-5]
 
-         # Calculate velocity and position for each segment using relative delta_t
-         for index, row in df.iterrows():
-             delta_t = row['delta_t']
+        # Use raw accelerations (not averaged) for each axis
+        df['accel_x'] = df['accel_x']
+        df['accel_y'] = df['accel_y']
+        df['accel_z'] = df['accel_z']
 
-             # Calculate velocity for this segment (using relative times)
-             delta_v_x = row['avg_accel_x'] * delta_t
-             delta_v_y = row['avg_accel_y'] * delta_t
-             delta_v_z = row['avg_accel_z'] * delta_t
+        # Calculate the total acceleration magnitude for reference if needed
+        df['total_acceleration'] = (df['accel_x']**2 + df['accel_y']**2 + df['accel_z']**2)**0.5
 
-             velocity_x = initial_velocity_x + delta_v_x
-             velocity_y = initial_velocity_y + delta_v_y
-             velocity_z = initial_velocity_z + delta_v_z
+        # Calculate velocity for each segment independently (without accumulation)
+        df['velocity_x'] = df['accel_x'] * df['delta_t']
+        df['velocity_y'] = df['accel_y'] * df['delta_t']
+        df['velocity_z'] = df['accel_z'] * df['delta_t']
 
-             # Store the velocity
-             velocities_x.append(velocity_x)
-             velocities_y.append(velocity_y)
-             velocities_z.append(velocity_z)
+        # Apply acceleration thresholding if provided
+        if accel_thresholds:
+            lower_accel = accel_thresholds.get('lower', -np.inf)
+            upper_accel = accel_thresholds.get('upper', np.inf)
+            df = df[(df['total_acceleration'] >= lower_accel) & (df['total_acceleration'] <= upper_accel)]
 
-             # Calculate position for this segment (using relative times)
-             delta_x = initial_velocity_x * delta_t + 0.5 * row['avg_accel_x'] * (delta_t ** 2)
-             delta_y = initial_velocity_y * delta_t + 0.5 * row['avg_accel_y'] * (delta_t ** 2)
-             delta_z = initial_velocity_z * delta_t + 0.5 * row['avg_accel_z'] * (delta_t ** 2)
+        # Apply velocity thresholding if provided
+        if velocity_thresholds:
+            lower_vel = velocity_thresholds.get('lower', -np.inf)
+            upper_vel = velocity_thresholds.get('upper', np.inf)
+            df = df[
+                (df['velocity_x'] >= lower_vel) & (df['velocity_x'] <= upper_vel) &
+                (df['velocity_y'] >= lower_vel) & (df['velocity_y'] <= upper_vel) &
+                (df['velocity_z'] >= lower_vel) & (df['velocity_z'] <= upper_vel)
+            ]
 
-             position_x = initial_position_x + delta_x
-             position_y = initial_position_y + delta_y
-             position_z = initial_position_z + delta_z
+        # Create and return the segments DataFrame
+        segments = pd.DataFrame({
+            'start_t': df['time'],
+            'stop_t': df['time_next'],
+            'delta_t': df['delta_t'],
+            'accel_x': df['accel_x'],
+            'accel_y': df['accel_y'],
+            'accel_z': df['accel_z'],
+            'total_acceleration': df['total_acceleration'],
+            'velocity_x': df['velocity_x'],
+            'velocity_y': df['velocity_y'],
+            'velocity_z': df['velocity_z'],
+        })
 
-             # Store the position
-             positions_x.append(position_x)
-             positions_y.append(position_y)
-             positions_z.append(position_z)
-
-             # Update the initial velocity and position for the next iteration
-             initial_velocity_x = velocity_x
-             initial_velocity_y = velocity_y
-             initial_velocity_z = velocity_z
-
-             initial_position_x = position_x
-             initial_position_y = position_y
-             initial_position_z = position_z
-
-         # Add velocity and position columns to the DataFrame
-         df['velocity_x'] = velocities_x
-         df['velocity_y'] = velocities_y
-         df['velocity_z'] = velocities_z
-         df['position_x'] = positions_x
-         df['position_y'] = positions_y
-         df['position_z'] = positions_z
-
-         # Create and return the segments DataFrame
-         segments = pd.DataFrame({
-             'start_t': df['time'],
-             'stop_t': df['time_next'],
-             'delta_t': df['delta_t'],
-             'avg_accel_x': df['avg_accel_x'],
-             'avg_accel_y': df['avg_accel_y'],
-             'avg_accel_z': df['avg_accel_z'],
-             'velocity_x': df['velocity_x'],
-             'velocity_y': df['velocity_y'],
-             'velocity_z': df['velocity_z'],
-             'position_x': df['position_x'],
-             'position_y': df['position_y'],
-             'position_z': df['position_z']
-         })
-
-         return segments
+        return segments

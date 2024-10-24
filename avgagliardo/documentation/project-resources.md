@@ -1,4 +1,22 @@
 
+## TODO
+report distances and Differences
+colorplots
+compile multiplots
+matplotlib formatting
+readme.md
+
+
+
+
+##Remember
+cmap = plt.cm.nipy_spectral
+
+
+
+
+
+
 
 ## List of resources used. Format and cite properly later..
 - unit conversion for inch to cm
@@ -21,7 +39,7 @@ https://www.google.com/books/edition/United_States_Naval_Institute_Proceeding/KS
 
 ### Modules
 -matplotlib
-
+https://matplotlib.org/stable/users/explain/colors/colormaps.html
 - pytest
 https://docs.pytest.org/en/stable/contents.html
 https://docs.pytest.org/en/stable/how-to/fixtures.html
