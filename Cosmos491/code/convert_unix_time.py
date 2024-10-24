@@ -66,10 +66,10 @@ file_paths = [
 
 # List of start date and time strings corresponding to each file
 start_times = [
-    "2024-10-24 14:00:00",  # Start time for the first file
-    "2024-10-24 14:15:00",  # Start time for the second file
-    "2024-10-24 14:30:00",  # Start time for the third file
-    "2024-10-24 14:45:00"   # Start time for the fourth file
+    "2024-10-23 17:16:00",  # Start time for the first file
+    "2024-10-23 17:12:00",  # Start time for the second file
+    "2024-10-24 01:50:00",  # Start time for the third file
+    "2024-10-24 02:30:00"   # Start time for the fourth file
 ]
 
 # Process the files and convert their time data
