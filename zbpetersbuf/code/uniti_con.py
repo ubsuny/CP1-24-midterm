@@ -4,7 +4,7 @@ import os
 import numpy as np
 
 def gt_unix(mod_name):
-    """docstring"""
+    """this code findes the time and data in the .md files for each data .csv file and converts then exports the time in unixt time ie unix time converter"""
     fpath='/workspaces/CP1-24-midterm/zbpetersbuf/data/'.strip()
     filpath = os.path.join(fpath, mod_name)
 

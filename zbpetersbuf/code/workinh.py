@@ -65,7 +65,7 @@ def distbetp(dta,a):
 print(distbetp(exmp,2))
 
 def gpsloc(datta):
-    """docstring type words here the following algotrith ADD REFRENCES HERE"""
+    """this function takes the walking data and converts it for the plwalk function to then plot"""
 
     laloalt = list(zip(datta.loc[:, 'Latitude (°)'],
             datta.loc[:, 'Longitude (°)'], datta.loc[:, 'Altitude (m)']))
@@ -74,14 +74,14 @@ def gpsloc(datta):
     yax = np.zeros(datta.shape[0])
 
     for i in range(datta.shape[0]):
-        xax[i]=((laloalt[i][2]))*(m.cos((laloalt[i][0])/(m.pi/180)))*(m.cos((laloalt[i][1])/(m.pi/180)))
-        yax[i]=((laloalt[i][2]))*(m.cos((laloalt[i][0])/(m.pi/180)))*(m.sin((laloalt[i][1])/(m.pi/180)))
+        xax[i]=(m.cos((laloalt[i][0])/(m.pi/180)))*(m.cos((laloalt[i][1])/(m.pi/180)))
+        yax[i]=(m.cos((laloalt[i][0])/(m.pi/180)))*(m.sin((laloalt[i][1])/(m.pi/180)))
     
     return xax, yax
 
 def plwalk(vel):
+    """This function plots the location of movment acros the earth the data you input for this function is the data exporte from the function gpsloc"""
     plt.figure()
-    """"subplot """
     vmovx = pd.DataFrame(vel[0])
     vmovy = pd.DataFrame(vel[1])
     plt.plot(vmovx,vmovy, color='red')
