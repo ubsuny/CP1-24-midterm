@@ -17,7 +17,7 @@ def unit_vector(vec):
     """
     vector = np.array(list(vec))
     vector_norm = np.linalg.norm(vector)
-    direction = vector / vector_norm
+    direction = vector / vector_norm if vector_norm != 0 else np.zeros_like(vector)
     return direction
 
 # Function that calculates the integrated set of data from another set
