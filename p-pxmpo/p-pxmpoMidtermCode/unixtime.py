@@ -46,8 +46,10 @@ if __name__ == "__main__":
     try:
         unix_time = extract_date_time(markdown_file)
         print(f"Unix time: {unix_time}")
-    except ValueError as e:  # Catch specific exception
+    except ValueError as e:  # Catch specific exception for ValueError
         print(e)
-    except Exception as e:  # Keep a broad exception catch for other errors
-        print(e)
-
+    except FileNotFoundError:  # Handle case where the file does not exist
+        print(f"Error: The file '{markdown_file}' was not found.")
+    except OSError as e:  # Handle other OS-related errors (e.g., permissions)
+        print(f"Error: {e}")
+        
