@@ -22,7 +22,7 @@ def calculate_direction(acceleration_data):
             direction = (ax / magnitude, ay / magnitude, az / magnitude)
         else:
             direction = (0, 0, 0)
-        directions.append(direction)  
+        directions.append(direction)
     return directions
 
 def example_usage():
