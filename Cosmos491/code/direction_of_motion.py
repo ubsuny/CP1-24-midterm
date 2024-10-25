@@ -24,7 +24,7 @@ def calculate_direction(acceleration_data):
         directions.append(direction)
     return directions
 
-def example_usage()
+def example_usage():
     """
     Example usage of the calculate_direction function using sample acceleration data.
     """
