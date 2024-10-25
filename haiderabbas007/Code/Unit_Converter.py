@@ -14,12 +14,12 @@ def unit_converter(val, unit):
       float: Length converted to meters.
   """
   if val < 0:
-    raise ValueError("Only non-negative lengths please.")
-  if unit == 'ft':
-    val = val * 0.3048  # From Google Unit Converter
+    raise ValueError("Only non-negative lengths please.")  # Negative lengths ruled out.
+  if unit.lower() == 'ft':  # Accounts for 'Ft'.
+    val = val * 0.3048  # From Google Unit Converter.
     return val
-  elif unit == 'yd':
-    val = val * 0.9144  # From Google Unit Converter
+  elif unit.lower() == 'yd':  # Accounts for 'Yd'.
+    val = val * 0.9144  # From Google Unit Converter.
     return val
   else:
     raise ValueError("Only 'ft' or 'yd' please.")
