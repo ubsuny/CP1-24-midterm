@@ -11,7 +11,7 @@ def test_feet_to_meters():
     '''
     function to test the foot to meter conversion
     '''
-    assert feett_to_meters(1) == 0.3048   # checking if 1 foot = 0.3048 meter or not
+    assert feet_to_meters(1) == 0.3048   # checking if 1 foot = 0.3048 meter or not
   
 def test_yards_to_meters():
     '''
@@ -20,13 +20,13 @@ def test_yards_to_meters():
     assert yards_to_meters(1) == 0.9144   # checking if 1 yard = 0.9144 meter or not
 
 
+
 '''
 unit testing module for motion_direction.py
 '''
-from motion_direction import calculate_direction
 
-def test_calcualte_direction():
-    """Tests for acceleration along the x and y axes"""
+def test_calculate_direction():
+    """Tests for acceleration along the x and z axes"""
     # Test for acceleration along the x-axis
     theta, phi = calculate_direction(1, 0, 0)
     assert pytest.approx(theta, 0.1) == 90  # Polar angle θ
