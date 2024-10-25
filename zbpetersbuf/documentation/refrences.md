@@ -2,7 +2,8 @@ for the module named workinh.py i used Vincenty's formulae based off the on on w
 the wikipedia link is <https://en.wikipedia.org/wiki/Vincenty%27s_formulae>
 and all the refrences that wikipedia used that i then used are listed
 
- 
+https://github.com/zbpetersbuf/CP1-24-midterm/blob/6a556ae8907d8a0979d1ec0fc8c59f581d01c5fd/zbpetersbuf/code/workinh.py#L17-L50
+
 Bessel, Friedrich Wilhelm (2010). "The calculation of longitude and latitude from geodesic measurements (1825)". Astron.
     Nachr. 331 (8): 852–861. arXiv:0908.1824. Bibcode:2010AN....331..852K. doi:10.1002/asna.201011352. S2CID
     118760590. English translation of Astron. Nachr. 4, 241–254 (1825).
