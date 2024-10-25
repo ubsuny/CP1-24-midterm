@@ -1,6 +1,6 @@
 # test_motion_direction.py
 
-from motion_direction import calculate_direction
+from dnxjay.code.motion_direction import calculate_direction
 
 def test_calculate_direction():
     # Basic direction checks in XY-plane
