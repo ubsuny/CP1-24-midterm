@@ -1,6 +1,7 @@
+"""Test the distance_between_two_points.py module"""
+import math
 import pytest
 import numpy as np
-import math
 from distance_between_two_points import (
     haversine_distance,
     read_gps_data,
@@ -26,54 +27,40 @@ def sample_csv_file(tmpdir):
     return str(csv_file)
 
 def test_haversine_distance():
-
     """Test the haversine distance calculation."""
 
-    EARTH_RADIUS_KM = 6371.0 #radius of Earth
+    # Initial setup
+
     point1 = (34.0, -118.0, 100)  # Latitude, Longitude, Altitude
     point2 = (34.1, -118.1, 150)
+    earth_radius_km = 6371.0  # radius of Earth
 
-    # Calculate the distance using the function
+    # Calculate distance using haversine_distance function
 
     distance = haversine_distance(point1, point2)
 
-    # Calculate the expected distance manually
-    # Haversine formula for horizontal distance
+    # Convert coordinates to radians
 
-    lat1, lon1, alt1 = point1
-    lat2, lon2, alt2 = point2
+    lat1, lon1, lat2, lon2 = map(math.radians, [point1[0], point1[1], point2[0], point2[1]])
 
-    # Convert latitude and longitude from degrees to radians
+    # Haversine formula components
 
-    lat1, lon1, lat2, lon2 = map(math.radians, [lat1, lon1, lat2, lon2])
-
-    # Differences in coordinates
-
-    dlat = lat2 - lat1
-    dlon = lon2 - lon1
-
-    # Haversine formula to calculate horizontal distance
-
+    dlat, dlon = lat2 - lat1, lon2 - lon1
     a = math.sin(dlat / 2) ** 2 + math.cos(lat1) * math.cos(lat2) * math.sin(dlon / 2) ** 2
-    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
-    horizontal_distance = EARTH_RADIUS_KM * c
+    horizontal_distance = earth_radius_km * (2 * math.atan2(math.sqrt(a), math.sqrt(1 - a)))
 
-    # Calculate the vertical distance and convert to kilometers
+    # Calculate the vertical distance in kilometers
 
-    vertical_distance = (alt2 - alt1) / 1000.0
+    vertical_distance = (point2[2] - point1[2]) / 1000.0
 
     # Total expected distance
 
     expected_distance = math.sqrt(horizontal_distance**2 + vertical_distance**2)
 
-    # Print distances for debugging
+    # Assert distances
 
-    print(f"Calculated Distance: {distance}")
-    print(f"Expected Distance: {expected_distance}")
-
-    # Use np.isclose to compare distances
-
-    assert np.isclose(distance, expected_distance, atol=1e-4), f"Expected {expected_distance}, got {distance}"
+    assert np.isclose(distance,
+                    expected_distance, atol=1e-4), f"Expected {expected_distance}, got {distance}"
 
 def test_read_gps_data(sample_csv_file):
 
@@ -110,7 +97,7 @@ def test_calculate_distances(sample_csv_file):
 def test_process_gps_data(sample_csv_file, tmpdir):
 
     """Test the entire process of reading GPS data and plotting."""
-    
+
     output_image = str(tmpdir.join("gps_motion.png"))
     distances = process_gps_data(sample_csv_file, output_image)
 

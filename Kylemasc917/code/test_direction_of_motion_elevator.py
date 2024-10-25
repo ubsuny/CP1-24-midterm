@@ -1,3 +1,4 @@
+"""Test for direction_of_motion.py module"""
 import numpy as np
 import pytest
 from direction_of_motion_elevator import (
@@ -55,9 +56,15 @@ def test_calculate_position(sample_csv_file):
     print("Expected Y Position:", expected_y_position)
     print("Expected Z Position:", expected_z_position)
 
-    assert np.allclose(x_position, expected_x_position, atol=1e-2), f"X Position mismatch: {x_position} != {expected_x_position}"
-    assert np.allclose(y_position, expected_y_position, atol=1e-2), f"Y Position mismatch: {y_position} != {expected_y_position}"
-    assert np.allclose(z_position, expected_z_position, atol=1e-2), f"Z Position mismatch: {z_position} != {expected_z_position}"
+    assert np.allclose(x_position,
+                       expected_x_position,
+                       atol=1e-2), f"X Position mismatch: {x_position} != {expected_x_position}"
+    assert np.allclose(y_position,
+                       expected_y_position,
+                       atol=1e-2), f"Y Position mismatch: {y_position} != {expected_y_position}"
+    assert np.allclose(z_position,
+                       expected_z_position,
+                       atol=1e-2), f"Z Position mismatch: {z_position} != {expected_z_position}"
 
 def test_process_acceleration_data(sample_csv_file, tmpdir):
 
@@ -72,11 +79,16 @@ def test_process_acceleration_data(sample_csv_file, tmpdir):
     expected_y_position = np.array([0.0, 0.0, 1., 2., 4.])  # Adjusted based on calculations
     expected_z_position = np.array([0.0, 0.0, 0.0, 1., 3.])  # Adjusted based on calculations
 
-    assert np.allclose(x_position, expected_x_position, atol=1e-2), f"X Position mismatch in process: {x_position} != {expected_x_position}"
-    assert np.allclose(y_position, expected_y_position, atol=1e-2), f"Y Position mismatch in process: {y_position} != {expected_y_position}"
-    assert np.allclose(z_position, expected_z_position, atol=1e-2), f"Z Position mismatch in process: {z_position} != {expected_z_position}"
+    assert np.allclose(x_position,
+                       expected_x_position,
+                       atol=1e-2), f"X Position mismatch: {x_position} != {expected_x_position}"
+    assert np.allclose(y_position,
+                       expected_y_position,
+                       atol=1e-2), f"Y Position mismatch: {y_position} != {expected_y_position}"
+    assert np.allclose(z_position,
+                       expected_z_position,
+                       atol=1e-2), f"Z Position mismatch: {z_position} != {expected_z_position}"
 
     # Check if the generated image file exists by using the path returned by the fixture
-    
-    assert tmpdir.join("final_plot.png").exists(), "Generated picture file does not exist."
 
+    assert tmpdir.join("final_plot.png").exists(), "Generated picture file does not exist."
