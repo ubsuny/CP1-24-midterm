@@ -1,8 +1,11 @@
 """
 This module contains utility functions that do not belong as first order
 members of the Trip class.
+
+This includes unit converters, plotting methods, and .csv handling functions.
 """
 from datetime import datetime
+import argparse
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -241,7 +244,7 @@ def plot_gpstrip_segments(gps_trip):
     plt.legend()
     plt.show()
 
-def plot_gpstrip_segments_with_color(gps_trip):
+def plot_gpstrip_segments_with_color(gps_trip, save_path=None, title=None):
     """
     Plots the segments of a GpsTrip object using longitude as x and latitude as
     y in a 2D plot, with the color of each point corresponding to its relative
@@ -300,17 +303,20 @@ def plot_gpstrip_segments_with_color(gps_trip):
     # Label the axes
     plt.xlabel('Longitude')
     plt.ylabel('Latitude')
-    plt.title('GPS Trip Segments with Direction of Travel (Time Progression)')
-
+    if title is None:
+        plt.title('GPS Trip Segments with Direction of Travel (Time Progression)')
+    else:
+        plt.title(title)
     # Add grid and show plot
     plt.grid(True)
+
+    # save
+    if save_path is not None:
+    # sanitize plural units
+        plt.savefig(save_path+gps_trip.experiment_name+".png")
     plt.show()
 
-def plot_acceltrip_acceleration_with_color(accel_trip,
-                                            component='total',
-                                            compression_factor=1.0,
-                                            connect_points=True,
-                                            step=1):
+def plot_acceltrip_acceleration_with_color(accel_trip, **kwargs):
     """
     Plots the specified acceleration component (x, y, z, or total) of an AccelTrip
     object over time, with color representing the direction and magnitude of
@@ -319,103 +325,147 @@ def plot_acceltrip_acceleration_with_color(accel_trip,
 
     Args:
         accel_trip (AccelTrip): An AccelTrip object with segment data containing
-            time and acceleration components.
-        component (str):
-            The acceleration component to plot ('x', 'y', 'z', or 'total').
-            Defaults to 'total'.
-        compression_factor (float):
-            Factor to compress the center of the color spectrum. Defaults to 1.0.
-        connect_points (bool):
-            Whether to connect points with lines. Defaults to True.
-        step (number):
-            Plot every Nth point to reduce the number of points displayed.
-            Defaults to 1 (plot all points).
-
-    Returns:
-        None: Displays the plot using Matplotlib.
+        time and acceleration components.
+        **kwargs:
+            - save_path (str): Path to save the plot as an image (optional).
+            - title (str): Title of the plot.
+            - component (str): The acceleration component to plot ('x', 'y', 'z',
+                or 'total'). Defaults to 'total'.
+            - compression_factor (float): Factor to adjust the color spectrum.
+                Defaults to 1.0.
+            - step (int): Plot every Nth point. Defaults to 1.
     """
+    # Set up argparse to handle keyword arguments
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        '--save_path',
+        type=str,
+        default=None,
+        help='Path to save the plot image.'
+    )
+    parser.add_argument(
+        '--title',
+        type=str,
+        default=None,
+        help='Title of the plot.'
+    )
+    parser.add_argument(
+        '--component',
+        type=str,
+        default='total',
+        choices=['x', 'y', 'z', 'total'],
+        help="Acceleration component to plot ('x', 'y', 'z', or 'total')."
+    )
+    parser.add_argument(
+        '--compression_factor',
+        type=float,
+        default=1.0,
+        help="Factor for color spectrum adjustment."
+    )
+    parser.add_argument(
+        '--step',
+        type=int,
+        default=1,
+        help="Downsampling factor, plotting every Nth point."
+    )
+    parser.add_argument(
+        '--connect_points',
+        action='store_true',
+        default=True,
+        help="Whether to connect points with lines."
+    )
+
+    # hide data so linter stops complaining
+    extra = {}
+
+    args, _ = parser.parse_known_args()
+    save_path = kwargs.get('save_path', args.save_path)
+    extra['title'] = kwargs.get('title', args.title)
+    extra['c'] = kwargs.get('component', args.component)
+    extra['cf'] = kwargs.get('compression_factor', args.compression_factor)
+    extra['s'] = kwargs.get('step', args.step)
+    extra['cp'] = kwargs.get('connect_points', args.connect_points)
+
     if accel_trip.segments is None:
         print("Error: No segment data available to plot.")
         return
 
     segments = accel_trip.segments
+    accel_column = ('accel_'+str(extra['c']) if
+        extra['c'] in ['x', 'y', 'z'] else 'total_acceleration')
 
-    # Determine which acceleration component to plot
-    if component == 'x':
-        accel_column = 'accel_x'
-    elif component == 'y':
-        accel_column = 'accel_y'
-    elif component == 'z':
-        accel_column = 'accel_z'
-    elif component == 'total':
-        accel_column = 'total_acceleration'
-    else:
-        print(f"Error: Invalid component '{component}'. Must be 'x', 'y', 'z', or 'total'.")
+    if accel_column not in segments.columns:
+        print(f"Error: Missing {extra['c']}-acceleration data in segments.")
         return
 
-    # Check if the necessary columns exist in the segments DataFrame
-    if not {'start_t', accel_column}.issubset(segments.columns):
-        print(f"Error: Missing time or {component}-acceleration data in segments.")
-        return
+    # Grouping related data into a dictionary to reduce the number of local variables
+    plot_data = {
+        'times': segments['start_t'].values[::extra['s']],
+        'acceleration': segments[accel_column].values[::extra['s']],
+        'compressed_acceleration': None,
+        'norm': None
+    }
 
-    # Extract time and the chosen acceleration component, using step to downsample data
-    times = segments['start_t'].values[::step]
-    acceleration = segments[accel_column].values[::step]
+    # Apply compression to the acceleration values for color scaling
+    plot_data['compressed_acceleration'] = (
+        np.sign(plot_data['acceleration']) *
+        (np.abs(plot_data['acceleration']) ** (1 / extra['cf']))
+    )
+    plot_data['norm'] = plt.Normalize(
+        plot_data['compressed_acceleration'].min(),
+        plot_data['compressed_acceleration'].max()
+    )
 
-    # Apply compression to the acceleration values to broaden the color spectrum
-    compressed_acceleration = (np.sign(acceleration) *
-        (np.abs(acceleration) ** (1 / compression_factor)))
-
-    # Normalize the compressed acceleration values for color mapping
-    norm = plt.Normalize(compressed_acceleration.min(), compressed_acceleration.max())
-
-    # Create the color map (from purple to red)
-    cmap = "nipy_spectral"
-
-    # Create the plot
+    # Set up the plot
     plt.figure(figsize=(10, 6))
 
     # Optionally connect points with lines
-    if connect_points:
-        plt.plot(
-            times,
-            acceleration,
+    line = None
+    if extra['cp']:
+        line, = plt.plot(
+            plot_data['times'],
+            plot_data['acceleration'],
             color='gray',
             alpha=0.7,
-            label=f'{component.capitalize()} Acceleration'
+            label=str(extra['c']).capitalize()+' Acceleration'  # Ensure the label is set
         )
 
-    # Plot points with color representing the acceleration magnitude and direction
+    # Scatter plot with color based on compressed acceleration
     sc = plt.scatter(
-        times,
-        acceleration,
-        c=compressed_acceleration,
-        cmap=cmap,
-        norm=norm,
-        marker='o'
+        plot_data['times'],
+        plot_data['acceleration'],
+        c=plot_data['compressed_acceleration'],
+        cmap="nipy_spectral",
+        norm=plot_data['norm'],
+        marker='o',
+        label=str(extra['c']).capitalize()+' Data Points'  # Label for scatter plot
     )
-
-    # Create colorbar to indicate acceleration magnitude and direction
     cbar = plt.colorbar(sc)
-    cbar.set_label(f'Scaled {component.capitalize()} Acceleration (m/s²)')
+    cbar.set_label('Scaled '+str(extra['c']).capitalize()+' Acceleration (m/s²)')
 
-    # Label the axes
     plt.xlabel('Time (s)')
-    plt.ylabel(f'{component.capitalize()} Acceleration (m/s²)')
+    plt.ylabel(str(extra['c']).capitalize()+' Acceleration (m/s²)')
 
-    title = f"{component.capitalize()}"
-    title += "Acceleration over Time for AccelTrip (Colored by Acceleration Direction)"
-    plt.title(title)
-
-    # Add grid and legend
+    # shorten the line
+    extra['at0'] = ' Acceleration over Time for AccelTrip'
+    extra['at1'] = extra['title'] or str(extra['c']).capitalize()+ extra['at0']
+    plt.title(extra['at'])
     plt.grid(True)
 
-    if connect_points is True:
-        plt.legend()
+    # Manually create a legend with line and scatter labels if applicable
+    handles, labels = [], []
+    if extra['cp'] and line is not None:
+        handles.append(line)
+        labels.append(line.get_label())
+    handles.append(sc)
+    labels.append(sc.get_label())
 
-    # Show the plot
+    plt.legend(handles, labels)
+
+    if save_path:
+        n = save_path+accel_trip.experiment_name+'_'+extra['c']+'_accel_with_color.png'
+        plt.savefig(n)
     plt.show()
-    return plt
 
 def plot_acceltrip_velocity(accel_trip, component='z'):
     """
@@ -463,106 +513,142 @@ def plot_acceltrip_velocity(accel_trip, component='z'):
     # Show the plot
     plt.show()
 
-def plot_acceltrip_velocity_with_acceleration_color(
-        accel_trip,
-        component='z',
-        compression_factor=1.0,
-        step=10):
+def plot_acceltrip_velocity_with_color(accel_trip, **kwargs):
     """
     Plots the specified velocity component (x, y, or z) of an AccelTrip object
     over time, with color representing the direction of acceleration. Red
     indicates positive acceleration, and purple indicates negative acceleration.
 
-    A compression factor is applied to the acceleration values to control the
-    color spectrum, making a wider range of colors visible (compressing the
-    center dominance).
-
     Args:
         accel_trip (AccelTrip): An AccelTrip object with segment data containing
         time and velocity components.
-
-        component (str): The velocity component to plot ('x', 'y', or 'z').
-            Defaults to 'z'.
-        compression_factor (float): Factor to compress the center of the color
-            spectrum. Defaults to 1.0.
-        step (int): Downsampling factor, plotting every Nth point. Defaults to 10.
-
-    Returns:
-        None: Displays the plot using Matplotlib.
+        **kwargs:
+            - save_path (str): Path to save the plot as an image (optional).
+            - title (str): Title of the plot.
+            - component (str): The velocity component to plot ('x', 'y', or
+                'z'). Defaults to 'z'.
+            - compression_factor (float): Factor to adjust the color spectrum.
+                Defaults to 1.0.
+            - step (int): Plot every Nth point. Defaults to 10.
     """
+    # Set up argparse to handle keyword arguments
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        '--save_path',
+        type=str,
+        default=None,
+        help='Path to save the plot image.'
+    )
+    parser.add_argument(
+        '--title',
+        type=str,
+        default=None,
+        help='Title of the plot.'
+    )
+    parser.add_argument(
+        '--component',
+        type=str,
+        default='z',
+        choices=['x', 'y', 'z'],
+        help="Velocity component to plot ('x', 'y', or 'z')."
+    )
+    parser.add_argument(
+        '--compression_factor',
+        type=float,
+        default=1.0,
+        help="Factor for color spectrum adjustment."
+    )
+    parser.add_argument(
+        '--step',
+        type=int,
+        default=10,
+        help="Downsampling factor, plotting every Nth point."
+    )
+    parser.add_argument(
+        '--connect_points',
+        action='store_true',
+        help="Whether to connect points with lines."
+    )
+    args, _unknown = parser.parse_known_args()
+
+    e = {}
+    e['sp'] = kwargs.get('save_path', args.save_path)
+    e['t'] = kwargs.get('title', args.title)
+    component = kwargs.get('component', args.component)
+    compression_factor = kwargs.get('compression_factor', args.compression_factor)
+    step = kwargs.get('step', args.step)
+    e['cp'] = kwargs.get('connect_points', args.connect_points)
+
     if accel_trip.segments is None:
         print("Error: No segment data available to plot.")
         return
 
     segments = accel_trip.segments
-
-    # Map component to the appropriate column name
     velocity_column = f'velocity_{component}'
-    if not {'start_t', velocity_column}.issubset(segments.columns):
-        print(f"Error: Missing time or {component}-velocity data in segments.")
+    if velocity_column not in segments.columns:
+        print(f"Error: Missing {component}-velocity data in segments.")
         return
 
-    # Extract the time and chosen velocity columns
-    times = segments['start_t'].values[::step]  # Downsample by selecting every Nth point
-    velocity = segments[velocity_column].values[::step]
+    # Using a dictionary to group related variables for plotting
+    plot_data = {
+        'times': segments['start_t'].values[::step],
+        'velocity': segments[velocity_column].values[::step],
+    }
 
-    # Calculate the change in velocity (acceleration) between consecutive points
-    acceleration = np.diff(velocity, prepend=velocity[0])
-
-    # Apply compression to the acceleration values to broaden the color spectrum
-    compressed_acceleration = (
-        np.sign(acceleration) * (np.abs(acceleration) ** (1 / compression_factor))
+    # Calculate acceleration and compressed acceleration, storing in the dictionary
+    plot_data['acceleration'] = np.diff(plot_data['velocity'], prepend=plot_data['velocity'][0])
+    plot_data['compressed_acceleration'] = (
+        np.sign(plot_data['acceleration'])*
+        (np.abs(plot_data['acceleration'])**(1 / compression_factor))
+    )
+    plot_data['norm'] = plt.Normalize(
+        plot_data['compressed_acceleration'].min(),
+        plot_data['compressed_acceleration'].max()
     )
 
-    # Normalize the compressed acceleration values for color mapping
-    norm = plt.Normalize(compressed_acceleration.min(), compressed_acceleration.max())
-
-    # Create the color map (from purple to red)
-    cmap = "nipy_spectral"
-
-    # Create the plot
+    # Start plotting
     plt.figure(figsize=(10, 6))
-
-    # Plot lines between points
     plt.plot(
-        times,
-        velocity,
+        plot_data['times'],
+        plot_data['velocity'],
         color='gray',
         alpha=0.7,
         label=f'{component.upper()}-Velocity'
     )
 
-    # Use scatter to plot points with colors based on the compressed acceleration direction
+    # Optionally connect points with lines
+    if e['cp']:
+        plt.plot(
+            plot_data['times'],
+            plot_data['acceleration'],
+            color='gray',
+            alpha=0.7,
+            label=f'{component.capitalize()} Acceleration'
+        )
+
+    # Scatter plot with color based on compressed acceleration
     sc = plt.scatter(
-        times,
-        velocity,
-        c=compressed_acceleration,
-        cmap=cmap,
-        norm=norm,
+        plot_data['times'],
+        plot_data['velocity'],
+        c=plot_data['compressed_acceleration'],
+        cmap="nipy_spectral",
+        norm=plot_data['norm'],
         marker='o'
     )
-
-    # Create colorbar to indicate acceleration direction
     cbar = plt.colorbar(sc)
     cbar.set_label('Scaled Acceleration (m/s²)')
-
-    # Label the axes
     plt.xlabel('Time (s)')
     plt.ylabel(f'{component.upper()}-Velocity (m/s)')
-
-    # set the title of the plot
-    title = f'{component.upper()}'
-    title += '-Velocity over Time for AccelTrip (Colored by Acceleration Direction)'
-    plt.title(title)
-
-    # Add grid and legend
+    plt.title(e['t'] or f'{component.upper()}-Velocity over Time for AccelTrip')
     plt.grid(True)
     plt.legend()
 
-    # Show the plot
+    if e['sp']:
+        n = e['sp']+accel_trip.experiment_name+'_'+component+'_velocity_with_color.png'
+        plt.savefig(n)
     plt.show()
 
-def plot_3d_trajectory(accel_trip):
+def plot_3d_trajectory(accel_trip, title=None, save_path=None):
     """
     Plots the 3D trajectory of an AccelTrip object using cumulative sums of the
     velocity components to approximate position. The color of the trajectory
@@ -635,58 +721,17 @@ def plot_3d_trajectory(accel_trip):
     ax.set_xlabel('X Position (normalized)')
     ax.set_ylabel('Y Position (normalized)')
     ax.set_zlabel('Z Position (normalized)')
-    ax.set_title('Normalized 3D Trajectory of Object Through Space')
+
+    if title is None:
+        title = accel_trip.experiment_name
+    plt.title(title)
 
     # Set equal scale for all axes
     ax.set_box_aspect([1, 1, 1])  # Equal aspect ratio
 
+    # save
+    if save_path is not None:
+    # sanitize plural units
+        plt.savefig(save_path+accel_trip.experiment_name+"_3d.png")
     # Show the plot
     plt.show()
-
-
-def render_multiplot(list1, list2, save_path='multiplot.png'):
-    """
-    Renders two lists of plots into a single multiplot arranged in two columns.
-
-    Args:
-        list1 (list): The first list of plot functions or plot data to be rendered in the left column.
-        list2 (list): The second list of plot functions or plot data to be rendered in the right column.
-        save_path (str): The file path where the PNG will be saved.
-
-    Returns:
-        None: Saves the multiplot PNG to the specified path.
-    """
-    # Determine the number of rows based on the longest list
-    num_rows = max(len(list1), len(list2))
-
-    # Create a figure with two columns and num_rows rows
-    fig, axes = plt.subplots(num_rows, 2, figsize=(10, 5 * num_rows))
-
-    # If there's only one row, axes will not be a 2D array, so we need to ensure it's iterable.
-    if num_rows == 1:
-        axes = [axes]
-
-    # Plot the first list in the left column
-    for i, plot_func in enumerate(list1):
-        if i < num_rows:
-            axes[i, 0].set_title(f'Plot {i+1} (Left)')
-            plot_func(axes[i, 0])  # Pass the axis to the plot function
-
-    # Plot the second list in the right column
-    for i, plot_func in enumerate(list2):
-        if i < num_rows:
-            axes[i, 1].set_title(f'Plot {i+1} (Right)')
-            plot_func(axes[i, 1])  # Pass the axis to the plot function
-
-    # Remove any empty subplots (in case the lists are not the same length)
-    for i in range(len(list1), num_rows):
-        fig.delaxes(axes[i, 0])
-    for i in range(len(list2), num_rows):
-        fig.delaxes(axes[i, 1])
-
-    # Adjust layout
-    plt.tight_layout()
-
-    # Save the multiplot as a PNG
-    plt.savefig(save_path)
-    plt.close()

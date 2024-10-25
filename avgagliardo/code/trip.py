@@ -67,9 +67,9 @@ class TripBase:
         }
 
         # Initialize the raw and meta data frames as private members
-        print("Importing data from: " + csv_path)
+        # print("Importing data from: " + csv_path)
         self.__csv_path = csv_path
-        print("Importing meta from: " + csv_dir + "meta/time.csv" )
+        # print("Importing meta from: " + csv_dir + "meta/time.csv" )
         self.__csv_meta_path = csv_meta_path
 
         # Import and store the raw data and metadata
@@ -301,6 +301,7 @@ class GpsTrip(TripBase):
         )
 
         # Convert latitude and longitude displacements to meters
+        # note the extra factor in longitude displacement
         # Latitude displacement in meters
         df['Latitude_Displacement_m'] = df['Latitude_Displacement'] * 111320
         # Longitude displacement in meters
@@ -600,3 +601,36 @@ class AccelTrip(TripBase):
         })
 
         return segments
+
+    def report_trip_summary(self):
+        """
+        Public method that generates a summary report of the trip details.
+        It reports the trip type, start time in UTC, trip duration, and the
+        number of frames in the raw trip data.
+
+        Returns:
+            str: A formatted string containing the trip type, start time (UTC),
+            duration (in seconds), and the number of data frames.
+        """
+        experiment_name = self.experiment_name
+        trip_type = self.trip_type
+        start_time_utc = (self.times['start_time_utc'] if
+            self.times['start_time_utc'] else 'Unknown')
+        start_time_unix = (self.times['start_time_unix'] if
+            self.times['start_time_unix'] else 'Unknown')
+        duration = (self.times['duration'] if
+            self.times['duration'] is not None else 'Unknown')
+        num_frames = (len(self.get_raw_frame()) if
+            self.get_raw_frame() is not None else 0)
+
+        return (
+            "\n--------------------\n"
+            f"Trip Summary:\n"
+            "--------------------\n"
+            f"Experiment Name: {experiment_name}\n"
+            f"Type of trip: {trip_type}\n"
+            f"Start time (UTC): {start_time_utc}\n"
+            f"Start time (Unix): {start_time_unix}\n"
+            f"Duration: {duration} seconds\n"
+            f"Number of frames: {num_frames}"
+        )
