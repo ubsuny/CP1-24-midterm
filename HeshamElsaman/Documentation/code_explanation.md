@@ -74,8 +74,8 @@
 
 ## References
 
-- "DIRECT AND INVERSE SOLUTIONS OF GEODESICS 0N THE ELLIPSOID WLTH APPLICATION OF NESTED EQUATIONS"
+[1] "DIRECT AND INVERSE SOLUTIONS OF GEODESICS 0N THE ELLIPSOID WLTH APPLICATION OF NESTED EQUATIONS"
 <https://www.ngs.noaa.gov/PUBS_LIB/inverse.pdf>
 
-- "Mercator projection"
+[2] "Mercator projection"
 <https://en.wikipedia.org/wiki/Mercator_projection>
