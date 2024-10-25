@@ -3,6 +3,7 @@ This module contains functions for processing CSV files and converting timestamp
 """
 import datetime
 import pandas as pd
+from datetime import timedelta
 
 def add_timestamp_to_data(file_path, start_time_str):
     """
@@ -19,14 +20,14 @@ def add_timestamp_to_data(file_path, start_time_str):
     # Read the CSV file
     df = pd.read_csv(file_path)
     # Convert the start time string to a datetime object
-    start_time = datetime.strptime(start_time_str, "%Y-%m-%d %H:%M:%S")
+    start_time = datetime.datetime.strptime(start_time_str, "%Y-%m-%d %H:%M:%S")
     # Add a new column to the DataFrame for the full timestamp
     df['timestamp'] = df['Time (s)'].apply(lambda t: start_time + timedelta(seconds=t))
     # Convert the timestamp to Unix time
     df['unix_time'] = df['timestamp'].apply(lambda x: int(x.timestamp()))
     return df
 
-def process_multiple_files(file_paths, start_times):
+def process_multiple_files(csv_file_paths, csv_start_times):
     """
     Process multiple CSV files and convert their time data to full date-time and Unix time.
     Parameters:
