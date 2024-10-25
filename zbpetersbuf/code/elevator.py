@@ -9,11 +9,7 @@ import numpy as np
 import pandas as pd
 
 def dimotion(edata):
-    """Enter the acceleration without g data in here, it then exports the time and velocities for
-    the x y and z in two maxtresies, combined into one. to acces the time matrix to acces the time 
-    matrix do dimotion(edata)[1] the matrix data is dimotion(edata)[0] where the x velocity is
-    accessed by dimotion(edata)[0][:,0], y is dimotion(edata)[0][:,1]
-    and z is dimotion(edata)[0][:,2]"""
+    """exports time and velocity from the elevator csv file"""
     edat = list(edata.loc[:, 'Time (s)'])
     edaxyz = list(zip(edata.loc[:, 'Linear Acceleration x (m/s^2)'],
             edata.loc[:, 'Linear Acceleration y (m/s^2)'],
@@ -29,14 +25,7 @@ def dimotion(edata):
     return vel,edat
 
 def pldimot(vel):
-    """This function takes in the data that dimotion exports (ie pldimot(dimotion(edata))) and
-    graphs the 3 velocities on one graph also once the function is used in your comand line it
-    asks if you want ot save your data, if you dont type yes nothing happens and the graph is not
-    saved, if you typoe yes the terminal then askes where in your directery you want to save the
-    .png file, ie if you want to save in in the code file enter
-    /workspaces/CP-24-midterm/zbpetersbuf/code/ it then saves the .png in this folder as Elevator
-    velocities.png if a file already existes with that name in the folder it overwrites
-    the save and saves the most recent image"""
+    """graphs the elevator movements in the x y and z directions"""
     plt.figure()
     vel_df = pd.DataFrame(vel[0])
     vmovx = vel_df.iloc[:,0].values
