@@ -1,5 +1,11 @@
 """
-This module converts lengths in yards or feet to meters.
+This module provides a function to convert lengths in yards or feet to meters.
+
+Function included:
+
+1. convert_to_meters(val, unit):
+   - Takes in lengths in yards or feet and converts them to meters.
+   - Supports both 'ft' (feet) and 'yd' (yards) units, and is case-insensitive.
 """
 
 def unit_converter(val, unit):
