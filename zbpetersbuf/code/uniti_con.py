@@ -8,7 +8,7 @@ import numpy as np
 
 def gt_unix(mod_name):
     """gives the unix time for the start of the data collection"""
-    fpath='/workspaces/CP1-24-midterm/zbpetersbuf/data/'.strip()
+    fpath='zbpetersbuf/data/'.strip()
     filpath = os.path.join(fpath, mod_name)
 
     with open(filpath, 'r', encoding='utf-8') as f:
