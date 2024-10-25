@@ -8,6 +8,7 @@ import unixtime_converter
 metafile = 'Kylemasc917/data/Kylemascmetafile0111.txt'
 
 # Get the Unix time from the metafile and print it
+
 try:
     unix_time = unixtime_converter.get_unix_time_from_metafile(metafile)
     print(f"Unix time: {unix_time}")
@@ -23,9 +24,11 @@ csv_file = "Kylemasc917/data/Kylemasc011AElevator.csv"  # Replace with the actua
 gen_pic = "Kylemasc917/data/motion_plot_elevator1.png"  # Replace with the desired output image file
 
 # Process the data and plot the motion
+
 x_position, y_position, z_position = process_acceleration_data(csv_file, gen_pic)
 
 # Print the calculated positions (for example purposes)
+
 print("X Position:", x_position)
 print("Y Position:", y_position)
 print("Z Position:", z_position)
@@ -39,9 +42,11 @@ csv_file = "Kylemasc917/data/Kylemasc011CElevator2.csv"  # Replace with the actu
 gen_pic = "Kylemasc917/data/motion_plot_elevator2.png"  # Replace with the desired output image file
 
 # Process the data and plot the motion
+
 x_position, y_position, z_position = process_acceleration_data(csv_file, gen_pic)
 
 # Print the calculated positions (for example purposes)
+
 print("X Position:", x_position)
 print("Y Position:", y_position)
 print("Z Position:", z_position)
@@ -49,6 +54,7 @@ print("Z Position:", z_position)
 """Test run of Distance between two GPS points module"""
 
 #import distance between two points function
+
 from distance_between_two_points import process_gps_data
 
 # Specify the input CSV file and the output image file
@@ -56,9 +62,11 @@ csv_file = "Kylemasc917/data/Kylemasc011DWalkingCircle.csv"  # Replace with the 
 output_image = "Kylemasc917/data/circle_graph.png"  # Replace with the desired output image file
 
 # Process the data and plot the motion
+
 distances = process_gps_data(csv_file, output_image)
 
 # Print the calculated distances between adjacent GPS points (for example purposes)
+
 print("Distances between adjacent GPS points:", distances)
 
 # Specify the input CSV file and the output image file
