@@ -360,7 +360,8 @@ def plot_gps_2d_projection(
 
     # Plotting the projected points with time-based colors
     plt.figure(figsize=(10, 6))
-    sc = plt.scatter(x, y, c=d['times'], cmap="nipy_spectral", norm=d['norm'], marker='o')
+    sc = plt.scatter(x, y, c=d['times'], cmap="plasma", norm=d['norm'], marker='o')
+    
     cbar = plt.colorbar(sc)
     cbar.set_label('Time (s)')
 
