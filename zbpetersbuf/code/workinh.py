@@ -1,6 +1,7 @@
 """
 workinh.py
-this moduale contains all the relevent code for walking gps data collection and ploting for these equations work for both the circle and the triangel
+this moduale contains all the relevent code for walking gps data collection and ploting for
+these equations work for both the circle and the triangel
 
 for the test the horizontal accuracy was 4.7 m, and verticle accuracy was 3.4
 """
@@ -50,30 +51,31 @@ def walkeq(walkdt):
     return s
 
 def distbetp(dta,a):
-    """for this function if you wasnt to know the distance between two data
-    coleced points only enter the smaller nemuber in 'a'
+    """for this function if you want to know the distance between two data
+    coleced points only enter the smaller numuber in 'a'
     ie if you want to know the distanse between points 4 and 5 only enter 4"""
-    b = a-1
-    b = max(b,0)
+    b = max(a-1,0)
     return dta[b]
 
 def gpsloc(datta):
     """this function takes the walking data and converts it for the plwalk function to then plot"""
 
     laloalt = list(zip(datta.loc[:, 'Latitude (°)'],
-            datta.loc[:, 'Longitude (°)'], datta.loc[:, 'Altitude (m)']))
+            datta.loc[:, 'Longitude (°)'], datta.loc[:, 'Altitude WGS84 (m)']))
 
     xax = np.zeros(datta.shape[0])
     yax = np.zeros(datta.shape[0])
 
     for i in range(datta.shape[0]):
-        xax[i]=(laloalt[i][2])*(m.cos((laloalt[i][0])/(m.pi/180)))*(m.cos((laloalt[i][1])/(m.pi/180)))
-        yax[i]=(laloalt[i][2])*(m.cos((laloalt[i][0])/(m.pi/180)))*(m.sin((laloalt[i][1])/(m.pi/180)))
-    
+        xax[i]=(laloalt[i][2]
+                +6378137)*(m.cos((laloalt[i][0])*(m.pi/180)))*(m.cos((laloalt[i][1])*(m.pi/180)))
+        yax[i]=(laloalt[i][2]
+                +6378137)*(m.cos((laloalt[i][0])*(m.pi/180)))*(m.sin((laloalt[i][1])*(m.pi/180)))
     return xax, yax
 
 def plwalk(vel,u_title,u_name):
-    """This function plots the location of movment acros the earth the data you input for this function is the data exporte from the function gpsloc"""
+    """This function plots the location of movment acros the earth the data you
+    input for this function is the data exporte from the function gpsloc"""
     plt.figure()
     vmovx = pd.DataFrame(vel[0])
     vmovy = pd.DataFrame(vel[1])

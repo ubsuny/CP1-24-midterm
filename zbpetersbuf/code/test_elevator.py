@@ -21,3 +21,5 @@ def test_imptomec():
     """This tests the imptomec function"""
     result = dimotion(dta)
     assert result[1] == v_and_t[1]
+
+print((2024-1970)//4)
