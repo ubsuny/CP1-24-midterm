@@ -1,9 +1,6 @@
 """
 This module contains utility functions that do not belong as first order
 members of the Trip class.
-
-List out classes and functions:...
-
 """
 from datetime import datetime
 import pandas as pd

@@ -200,3 +200,126 @@ class TestImportCsv:
 
         # The function should return None for a missing file
         assert df is None
+
+from utils import (
+    convert_to_feet, timecode_to_unix, haversine_with_altitude,
+    plot_gpstrip_segments, plot_gpstrip_segments_with_color,
+    plot_acceltrip_acceleration_with_color, plot_acceltrip_velocity,
+    plot_acceltrip_velocity_with_acceleration_color, plot_3d_trajectory,
+    render_multiplot
+)
+
+class TestConvertToFeet:
+    """
+    Unit tests for the convert_to_feet function.
+    """
+
+    def test_meters_to_feet(self):
+        """
+        Test conversion from meters to feet.
+        1 meter should equal approximately 3.28084 feet.
+        """
+        assert pytest.approx(convert_to_feet(1, 'm'), 0.0001) == 3.28084
+
+    def test_invalid_unit(self):
+        """
+        Test that an invalid unit raises a ValueError.
+        Passing an unknown unit should raise an exception.
+        """
+        with pytest.raises(ValueError):
+            convert_to_feet(1, 'unknown_unit')
+
+
+class TestTimecodeToUnix:
+    """
+    Unit tests for the timecode_to_unix function.
+    """
+
+    def test_valid_timecode(self):
+        """
+        Test conversion of a valid time string to Unix time.
+        """
+        time_str = '2024-01-01 00:00:00.000 UTC+0000'
+        assert timecode_to_unix(time_str) == 1704067200
+
+
+class TestHaversineWithAltitude:
+    """
+    Unit tests for the haversine_with_altitude function.
+    """
+
+    def test_distance_calculation(self):
+        """
+        Test calculation of 3D distance between two points with altitude.
+        """
+        start = {'lat': 40.7128, 'lon': -74.0060, 'alt': 10}
+        end = {'lat': 34.0522, 'lon': -118.2437, 'alt': 20}
+        distance = haversine_with_altitude(start, end)
+        assert pytest.approx(distance, 0.1) == 3940489.2  # Expected distance in meters
+
+
+class TestPlots:
+    """
+    Placeholder tests for plot functions in utils.py.
+    These tests ensure the functions execute without errors.
+    """
+
+    def test_plot_gpstrip_segments(self, mocker):
+        """
+        Test that plot_gpstrip_segments executes without errors.
+        """
+        mocker.patch('matplotlib.pyplot.show')
+        gps_trip = mocker.Mock()
+        gps_trip.segments = mocker.Mock(columns=['start_long', 'start_lat', 'end_long', 'end_lat'])
+        plot_gpstrip_segments(gps_trip)
+
+    def test_plot_gpstrip_segments_with_color(self, mocker):
+        """
+        Test that plot_gpstrip_segments_with_color executes without errors.
+        """
+        mocker.patch('matplotlib.pyplot.show')
+        gps_trip = mocker.Mock()
+        gps_trip.segments = mocker.Mock(columns=['start_long', 'start_lat', 'end_long', 'end_lat', 'start_t', 'stop_t'])
+        plot_gpstrip_segments_with_color(gps_trip)
+
+    def test_plot_acceltrip_acceleration_with_color(self, mocker):
+        """
+        Test that plot_acceltrip_acceleration_with_color executes without errors.
+        """
+        mocker.patch('matplotlib.pyplot.show')
+        accel_trip = mocker.Mock()
+        accel_trip.segments = mocker.Mock(columns=['start_t', 'total_acceleration'])
+        plot_acceltrip_acceleration_with_color(accel_trip)
+
+    def test_plot_acceltrip_velocity(self, mocker):
+        """
+        Test that plot_acceltrip_velocity executes without errors.
+        """
+        mocker.patch('matplotlib.pyplot.show')
+        accel_trip = mocker.Mock()
+        accel_trip.segments = mocker.Mock(columns=['start_t', 'velocity_z'])
+        plot_acceltrip_velocity(accel_trip)
+
+    def test_plot_3d_trajectory(self, mocker):
+        """
+        Test that plot_3d_trajectory executes without errors.
+        """
+        mocker.patch('matplotlib.pyplot.show')
+        accel_trip = mocker.Mock()
+        accel_trip.segments = mocker.Mock(columns=['start_t', 'velocity_x', 'velocity_y', 'velocity_z'])
+        plot_3d_trajectory(accel_trip)
+
+
+class TestRenderMultiplot:
+    """
+    Unit test for the render_multiplot function.
+    """
+
+    def test_render_multiplot_executes(self, mocker):
+        """
+        Test that render_multiplot executes without errors.
+        """
+        mocker.patch('matplotlib.pyplot.savefig')
+        list1 = [lambda ax: ax.plot([0, 1], [0, 1])]
+        list2 = [lambda ax: ax.plot([1, 0], [1, 0])]
+        render_multiplot(list1, list2)
