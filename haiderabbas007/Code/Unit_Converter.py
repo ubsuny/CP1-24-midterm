@@ -13,6 +13,8 @@ def unit_converter(val, unit):
   Returns:
       float: Length converted to meters.
   """
+  if val < 0:
+    raise ValueError("Only non-negative lengths please.")
   if unit == 'ft':
     val = val * 0.3048  # From Google Unit Converter
     return val
