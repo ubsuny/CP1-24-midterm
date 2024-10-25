@@ -1,4 +1,4 @@
-weather conditions sunny ~ 62F
+weather conditions sunny 62 F
 
 time start 2024-10-19 11:48:48.015 UTC-04:00
 

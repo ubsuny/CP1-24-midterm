@@ -37,24 +37,29 @@ file and converts then exports the time in unixt time ie unix time converter
 in the file workinh.py
 
 how to use the function walkeq
-
+takes your data you  and exports the distance traveled
 
 how to use the function distbetp
-
+for this function if you want to know the distance between two data
+coleced points only enter the smaller numuber in 'a'
+ie if you want to know the distanse between points 4 and 5 only enter 4
 
 how to use the function gpsloc
-
+this function takes the walking data and converts it for the plwalk function to then plot
 
 how to use the function plwalk
+This function plots the location of movment across the earth the data you
+input for this function is the data exporte from the function gpsloc
 
 """
+import pandas as pd
 from elevator import dimotion, pldimot
 from workinh import gpsloc, plwalk
-import pandas as pd
 
 etot = pd.read_csv('/workspaces/CP1-24-midterm/zbpetersbuf/data/LL05_eletot.csv')
 print(etot)
-print([['Time (s)','Linear Acceleration x (m/s^2)','Linear Acceleration y (m/s^2)','Linear Acceleration z (m/s^2)'],[1,3,3,3],[2,1,2,2],[3,1,2,3]])
+print([['Time (s)','Linear Acceleration x (m/s^2)','Linear Acceleration y (m/s^2)',
+        'Linear Acceleration z (m/s^2)'],[1,3,3,3],[2,1,2,2],[3,1,2,3]])
 vel = dimotion(etot)
 pldimot(vel)
 

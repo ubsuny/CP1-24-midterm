@@ -51,9 +51,7 @@ def walkeq(walkdt):
     return s
 
 def distbetp(dta,a):
-    """for this function if you want to know the distance between two data
-    coleced points only enter the smaller numuber in 'a'
-    ie if you want to know the distanse between points 4 and 5 only enter 4"""
+    """Shows the distance between gps locations"""
     b = max(a-1,0)
     return dta[b]
 
@@ -74,8 +72,7 @@ def gpsloc(datta):
     return xax, yax
 
 def plwalk(vel,u_title,u_name):
-    """This function plots the location of movment acros the earth the data you
-    input for this function is the data exporte from the function gpsloc"""
+    """input for this function is the data exporte from the function gpsloc"""
     plt.figure()
     vmovx = pd.DataFrame(vel[0])
     vmovy = pd.DataFrame(vel[1])
