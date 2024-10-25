@@ -38,6 +38,15 @@ in the file workinh.py
 
 how to use the function walkeq
 
+
+how to use the function distbetp
+
+
+how to use the function gpsloc
+
+
+how to use the function plwalk
+
 """
 from elevator import dimotion, pldimot
 from workinh import gpsloc, plwalk
