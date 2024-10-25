@@ -26,7 +26,7 @@ velocity_z_ad_1 = list(integrated_data(times_ad_1, acceleration_z_ad_1))
 
 # The velocity vectors list for the first run
 velocity_ad_1 = [
-    [velocity_x_ad_1[i], velocity_x_ad_1[i], velocity_x_ad_1[i]]
+    [velocity_x_ad_1[i], velocity_y_ad_1[i], velocity_z_ad_1[i]]
     for i in range(len(times_ad_1))
     ]
 
@@ -56,7 +56,7 @@ velocity_z_ad_2 = list(integrated_data(times_ad_2, acceleration_z_ad_2))
 
 # The velocity vectors list for the second run
 velocity_ad_2 = [
-    [velocity_x_ad_2[i], velocity_x_ad_2[i], velocity_x_ad_2[i]]
+    [velocity_x_ad_2[i], velocity_y_ad_2[i], velocity_z_ad_2[i]]
     for i in range(len(times_ad_2))
     ]
 
@@ -86,7 +86,7 @@ velocity_z_ad_3 = list(integrated_data(times_ad_3, acceleration_z_ad_3))
 
 # The velocity vectors list for the third run
 velocity_ad_3 = [
-    [velocity_x_ad_3[i], velocity_x_ad_3[i], velocity_x_ad_3[i]]
+    [velocity_x_ad_3[i], velocity_y_ad_3[i], velocity_z_ad_3[i]]
     for i in range(len(times_ad_3))
     ]
 
@@ -116,7 +116,7 @@ velocity_z_ad_4 = list(integrated_data(times_ad_4, acceleration_z_ad_4))
 
 # The velocity vectors list for the fourth run
 velocity_ad_4 = [
-    [velocity_x_ad_4[i], velocity_x_ad_4[i], velocity_x_ad_4[i]]
+    [velocity_x_ad_4[i], velocity_y_ad_4[i], velocity_z_ad_4[i]]
     for i in range(len(times_ad_4))
     ]
 
@@ -153,7 +153,7 @@ velocity_z_au_1 = list(integrated_data(times_au_1, acceleration_z_au_1))
 
 # The velocity vectors list for the first run
 velocity_au_1 = [
-    [velocity_x_au_1[i], velocity_x_au_1[i], velocity_x_au_1[i]]
+    [velocity_x_au_1[i], velocity_y_au_1[i], velocity_z_au_1[i]]
     for i in range(len(times_au_1))
     ]
 
@@ -183,7 +183,7 @@ velocity_z_au_2 = list(integrated_data(times_au_2, acceleration_z_au_2))
 
 # The velocity vectors list for the second run
 velocity_au_2 = [
-    [velocity_x_au_2[i], velocity_x_au_2[i], velocity_x_au_2[i]]
+    [velocity_x_au_2[i], velocity_y_au_2[i], velocity_z_au_2[i]]
     for i in range(len(times_au_2))
     ]
 
@@ -213,7 +213,7 @@ velocity_z_au_3 = list(integrated_data(times_au_3, acceleration_z_au_3))
 
 # The velocity vectors list for the third run
 velocity_au_3 = [
-    [velocity_x_au_3[i], velocity_x_au_3[i], velocity_x_au_3[i]]
+    [velocity_x_au_3[i], velocity_y_au_3[i], velocity_z_au_3[i]]
     for i in range(len(times_au_3))
     ]
 
@@ -243,7 +243,7 @@ velocity_z_au_4 = list(integrated_data(times_au_4, acceleration_z_au_4))
 
 # The velocity vectors list for the fourth run
 velocity_au_4 = [
-    [velocity_x_au_4[i], velocity_x_au_4[i], velocity_x_au_4[i]]
+    [velocity_x_au_4[i], velocity_y_au_4[i], velocity_z_au_4[i]]
     for i in range(len(times_au_4))
     ]
 
