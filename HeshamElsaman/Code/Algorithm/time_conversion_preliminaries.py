@@ -20,10 +20,9 @@ def check_leap(year):
         if year % 100 == 0:
             if year % 400 == 0:
                 return True
-            else:
-                return False
+            return False
         else:
-            return True    
+            return True
     return False
 
 # Function that calculates the total number of days given two years
@@ -60,7 +59,7 @@ def days_past(year, month, day):
     days (number): the desired number of days
     """
     days = day - 1
-    if ((check_leap(year)) & (month > 2)): days += 1
+    if (check_leap(year)) & (month > 2): days += 1
     for i in range(month - 1):
         days += monthdays[i]
     return days
@@ -78,4 +77,3 @@ def seconds_past(hr, min, sec):
     """
     seconds = sec + 60 * min + 3600 * hr
     return seconds
-
