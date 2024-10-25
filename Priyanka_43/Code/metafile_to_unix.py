@@ -38,4 +38,3 @@ def convert_to_unix(file_path):
         raise FileNotFoundError(f"The file {file_path} does not exist.")
     except ValueError:
         raise ValueError("Date format should be 'YYYY-MM-DD HH:MM:SS'.")
-
