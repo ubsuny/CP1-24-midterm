@@ -361,7 +361,6 @@ def plot_gps_2d_projection(
     # Plotting the projected points with time-based colors
     plt.figure(figsize=(10, 6))
     sc = plt.scatter(x, y, c=d['times'], cmap="plasma", norm=d['norm'], marker='o')
-    
     cbar = plt.colorbar(sc)
     cbar.set_label('Time (s)')
 
@@ -373,7 +372,6 @@ def plot_gps_2d_projection(
     # Save plot if path is provided
     if save_path is not None:
         plt.savefig(save_path + gps_trip.experiment_name + "_projection.png")
-
     plt.show()
 
 def plot_acceltrip_acceleration_with_color(accel_trip, **kwargs):
