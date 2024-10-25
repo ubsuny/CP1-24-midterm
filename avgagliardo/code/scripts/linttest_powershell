@@ -1,8 +1,0 @@
-
-function linttest {
-    param (
-        [string]$filename
-    )
-    pylint $filename
-    pytest $filename
-}

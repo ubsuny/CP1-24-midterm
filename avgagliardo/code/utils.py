@@ -449,7 +449,7 @@ def plot_acceltrip_acceleration_with_color(accel_trip, **kwargs):
     # shorten the line
     extra['at0'] = ' Acceleration over Time for AccelTrip'
     extra['at1'] = extra['title'] or str(extra['c']).capitalize()+ extra['at0']
-    plt.title(extra['at'])
+    plt.title(extra['at1'])
     plt.grid(True)
 
     # Manually create a legend with line and scatter labels if applicable
