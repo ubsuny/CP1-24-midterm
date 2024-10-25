@@ -32,7 +32,7 @@ def convert_to_unix_time(date_str, time_str=None):
     """Convert a date (and optional time) string to Unix time."""
 
     # Split the date and time strings
-    
+
     year, month, day = map(int, date_str.split('-'))
     if time_str:
         hours, minutes, seconds = map(int, time_str.split(':'))
