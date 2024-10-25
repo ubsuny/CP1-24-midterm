@@ -52,7 +52,7 @@ def direction_of_motion(ax,ay,az,t, i):
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
 
-   # Plot vectors using quiver
+   # Plot normalized vectors using quiver
     ax.quiver(0, 0, 0, vx[i], vy[i], vz[i], color='b', length=1, normalize=True)
 
     # Label axes

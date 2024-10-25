@@ -8,7 +8,10 @@ import numpy as np
 def gettime(path):
     '''
     This function extracts date and time information from markdown metadata files.
-
+    The metadata files must have the time data starting in row 10 and column 4 (beginning index 
+    of 1). The data must be formatted in order of year, month, day, hour, minute, second and
+    separated by commas.
+    
     Parameters:
     - path: String type path to markdown file: '/path/to/markdown/file/meta_data_file.md'
 
