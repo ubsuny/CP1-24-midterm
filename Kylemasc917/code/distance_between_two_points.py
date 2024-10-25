@@ -8,16 +8,7 @@ EARTH_RADIUS_KM = 6371.0
 
 def haversine_distance(point1, point2):
 
-    """
-    Calculate the distance between two GPS coordinates considering altitude.
-
-    Parameters:
-    lat1, lon1, alt1 -- Latitude, Longitude, and Altitude of point 1
-    lat2, lon2, alt2 -- Latitude, Longitude, and Altitude of point 2
-
-    Returns:
-    Total distance in kilometers (considering both horizontal and vertical distances).
-    """
+    """Calculate the distance between two GPS coordinates considering altitude."""
 
     lat1, lon1, alt1 = point1
     lat2, lon2, alt2 = point2
@@ -52,15 +43,7 @@ def haversine_distance(point1, point2):
 
 def read_gps_data(csv_file):
 
-    """
-    Read GPS data (with altitude) from a CSV file.
-    
-    Parameters:
-    csv_file -- Path to the input CSV file
-    
-    Returns:
-    A list of tuples containing (latitude, longitude, altitude).
-    """
+    """Read GPS data (with altitude) from a CSV file."""
 
     gps_data = []
 
@@ -84,15 +67,7 @@ def read_gps_data(csv_file):
 
 def calculate_distances(gps_data):
 
-    """
-    Calculate the distance between each pair of adjacent GPS points (considering altitude).
-    
-    Parameters:
-    gps_data -- A list of tuples containing (latitude, longitude, altitude).
-    
-    Returns:
-    A list of distances in kilometers between adjacent GPS points.
-    """
+    """Calculate the distance between each pair of adjacent GPS points (considering altitude)."""
 
     distances = []
     for i in range(len(gps_data) - 1):
@@ -105,13 +80,7 @@ def calculate_distances(gps_data):
 
 def plot_gps_motion(gps_data, output_image):
 
-    """
-    Plot the GPS motion path (ignoring altitude) and save it as a PNG image.
-
-    Parameters:
-    gps_data -- A list of tuples containing (latitude, longitude, altitude).
-    output_image -- Path to the output PNG file.
-    """
+    """Plot the GPS motion path (ignoring altitude) and save it as a PNG image."""
 
     lats = [point[0] for point in gps_data]
     lons = [point[1] for point in gps_data]
@@ -135,14 +104,8 @@ def process_gps_data(csv_file, output_image):
     Main function to read GPS data from a CSV,
     calculate distances between points (considering altitude),
     and plot the motion.
-
-    Parameters:
-    csv_file -- Path to the input CSV file.
-    output_image -- Path to the output PNG image file.
-
-    Returns:
-    A list of distances between adjacent GPS points.
     """
+
     # Step 1: Read the GPS data
 
     gps_data = read_gps_data(csv_file)

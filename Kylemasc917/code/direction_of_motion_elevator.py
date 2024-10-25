@@ -5,32 +5,17 @@ import matplotlib.pyplot as plt
 
 def read_acceleration_data(csv_file):
 
-    """
-    Read acceleration data from a CSV file.
-
-    Parameters:
-    csv_file -- Path to the input CSV file.
-
-    Returns:
-    A numpy array with time, x, y, z acceleration data.
-    """
+    """Read acceleration data from a CSV file."""
 
     data = np.genfromtxt(csv_file, delimiter=',', skip_header=1)
+
     # This will return a 2D array with time, x, y, z values
 
     return data
 
 def calculate_position(data):
 
-    """
-    Calculate the position based on acceleration data using numerical integration.
-
-    Parameters:
-    data -- A numpy array with acceleration data.
-
-    Returns:
-    A tuple containing the cumulative position arrays for x, y, and z.
-    """
+    """Calculate the position based on acceleration data using numerical integration."""
 
     time = data[:, 0]
     x_acc = data[:, 1]
@@ -54,15 +39,7 @@ def calculate_position(data):
 
 def plot_motion(x_position, y_position, z_position, gen_pic):
 
-    """
-    Plot the motion path for x, y, and z positions and save it as a PNG image.
-
-    Parameters:
-    x_position -- Cumulative position in the x direction.
-    y_position -- Cumulative position in the y direction.
-    z_position -- Cumulative position in the z direction.
-    gen_pic -- Path to the generated PNG picture file.
-    """
+    """Plot the motion path for x, y, and z positions and save it as a PNG image."""
 
     plt.figure(figsize=(15, 10))
 
@@ -99,16 +76,7 @@ def plot_motion(x_position, y_position, z_position, gen_pic):
 
 def process_acceleration_data(csv_file, gen_pic):
 
-    """
-    Main function to read acceleration data, calculate positions, and plot the motion.
-
-    Parameters:
-    CsvFile -- Path to the input CSV file.
-    gen_pic -- Path to the generated PNG image file.
-
-    Returns:
-    A tuple containing cumulative positions in x, y, and z directions.
-    """
+    """Main function to read acceleration data, calculate positions, and plot the motion."""
 
     # Step 1: Read the acceleration data
 

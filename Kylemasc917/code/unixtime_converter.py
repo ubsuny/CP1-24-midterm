@@ -1,14 +1,9 @@
 """This module takes the date and time from a metafile and converts it into Unixtime."""
+
 def read_text_metafile(filename):
-    """
-    Read metadata from a text file and return it as a dictionary.
 
-    Parameters:
-    filename -- Path to the metafile (e.g., 'metadata.txt').
+    """Read metadata from a text file and return it as a dictionary."""
 
-    Returns:
-    A dictionary containing the metadata.
-    """
     metadata = {}
     with open(filename, 'r', encoding='utf-8') as file:
         for line in file:
@@ -18,33 +13,26 @@ def read_text_metafile(filename):
 
 
 def is_leap_year(year):
-    """
-    Check if a given year is a leap year.
-    """
+
+    """Check if a given year is a leap year."""
+
     return year % 4 == 0 and (year % 100 != 0 or year % 400 == 0)
 
 
 def days_in_month(month, year):
-    """
-    Get the number of days in a given month of a given year.
-    """
+
+    """Get the number of days in a given month of a given year."""
+
     days_in_each_month = [31, 28 + is_leap_year(year), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
     return days_in_each_month[month - 1]
 
 
 def convert_to_unix_time(date_str, time_str=None):
-    """
-    Convert a date (and optional time) string to Unix time.
 
-    Parameters:
-    date_str -- A string representing the date (e.g., '2024-10-21').
-    time_str -- A string representing the time (optional, e.g., '14:30:00').
-                If no time is provided, '00:00:00' is assumed.
+    """Convert a date (and optional time) string to Unix time."""
 
-    Returns:
-    Unix time (seconds since January 1, 1970).
-    """
     # Split the date and time strings
+    
     year, month, day = map(int, date_str.split('-'))
     if time_str:
         hours, minutes, seconds = map(int, time_str.split(':'))
