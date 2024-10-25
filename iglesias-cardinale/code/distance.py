@@ -18,7 +18,7 @@ def gps_distance_flat_earth(x1,x2):
     - Absolute distance between x1 and x2 in the same units as x1 and x2
     '''
 
-    return (sum((x2[i]-x1[i])**2 for i in len(x1)))**0.5
+    return (sum((x2[i]-x1[i])**2 for i in range(len(x1))))**0.5
 
 #Useful constants
 
