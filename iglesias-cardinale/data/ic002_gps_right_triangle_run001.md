@@ -2,7 +2,7 @@
 
 Notes: Walked in a right triangle with vertices in the South West corner of Governer's D Lot, 
        South East corner of Governer's C lot and North East corner og Governer's C lot on UB
-       North Camous.
+       North Campus.
 Weather Conditions: ~70$^\circ$ Fahrenheit, clear skies and dry
 Date and Time of Experiment: 2024-10-20 16:25:05.113 UTC-04:00 --> 2024-10-20 16:30:55.251 UTC-04:00
 

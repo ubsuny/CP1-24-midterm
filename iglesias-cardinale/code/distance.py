@@ -53,15 +53,15 @@ def gps_wgs84(lat,lon,alt):
     - alt: altitude in meters in the WGS84 ellipsoid
 
     returns:
-    - 
+    - x, y, z: position along the x y and z axes
 
     '''
 
     r = r_earth(lat) + alt
 
-    x = r * np.cos(lat) * np.cos(lon) 
-    y = r * np.cos(lat) * np.sin(lon)  
-    z = r * np.sin(lat) 
+    x = r * np.cos(lat) * np.cos(lon)
+    y = r * np.cos(lat) * np.sin(lon)
+    z = r * np.sin(lat)
 
     return x, y, z
 

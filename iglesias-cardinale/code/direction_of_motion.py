@@ -4,7 +4,6 @@ This module contains functions to find the direction of motion from acceleration
 
 import numpy as np
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
 
 def velocity(t, a, v_0):
     '''
@@ -26,9 +25,11 @@ def velocity(t, a, v_0):
     v = v_0 + np.cumsum(a * dt)
     return v
 
-def direction_of_motion(ax,ay,az,t, i, v_0):
+def direction_of_motion(ax,ay,az,t, i):
     '''
-    This function plots the direction of motion at a given time, t[i] given acceleration data.
+    This function plots the direction of motion at a given time, t[i] given acceleration data. 
+    The initial velocity is always set to zero. This is to avoid pylint complaining about
+    too many positional arguments. 
 
     Parameters:
     - t: Time values at which we have a defined acceleration and at which we will find the velocity
@@ -36,30 +37,31 @@ def direction_of_motion(ax,ay,az,t, i, v_0):
     - ay: y-acceleration at each time, t
     - az: z-acceleration at each time, t
     - i: index of t at which we find the direction of motion
-    - v_0: Initial velocity assumed to be the same in all direction. Generally zero.
 
     Returns:
     - 3d plot of normalized vector v 
     '''
 
+    v_0 = 0
+
     vx = velocity(t,ax,v_0)
     vy = velocity(t,ay,v_0)
     vz = velocity(t,az,v_0)
 
-    v_mag = np.sqrt(vx**2+vy**2+vz**2)
+    # Create a 3D plot
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
 
    # Plot vectors using quiver
     ax.quiver(0, 0, 0, vx[i], vy[i], vz[i], color='b', length=1, normalize=True)
 
     # Label axes
-    ax.set_xlabel('X')
-    ax.set_ylabel('Y')
-    ax.set_zlabel('Z')
+    ax.set_xlabel(r'$v_x (m/s)$')
+    ax.set_ylabel(r'$v_y (m/s)$')
+    ax.set_zlabel(r'$v_z (m/s)$')
 
-    v = max(vx[1], vy[1], vz[1])/v_mag
-
-    ax.set_xlim([-v, v])  # Set the range for x-axis
-    ax.set_ylim([-v, v])  # Set the range for y-axis
-    ax.set_zlim([-v, v])
+    ax.set_xlim([-1, 1])  # Set the range for x-axis
+    ax.set_ylim([-1, 1])  # Set the range for y-axis
+    ax.set_zlim([-1, 1])
 
     plt.show()
