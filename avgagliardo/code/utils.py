@@ -316,6 +316,65 @@ def plot_gpstrip_segments_with_color(gps_trip, save_path=None, title=None):
         plt.savefig(save_path+gps_trip.experiment_name+".png")
     plt.show()
 
+def plot_gps_2d_projection(
+        gps_trip,
+        ref_latitude=None,
+        ref_longitude=None,
+        save_path=None,
+        title=None):
+    """
+    Projects GPS data (in WGS84) onto a 2D XY plane and plots it, coloring points
+    based on relative time.
+
+    Args:
+        gps_trip (GpsTrip): A GpsTrip object with GPS data including 'Time (s)',
+            'Latitude (°)', and 'Longitude (°)' columns.
+        ref_latitude (float, optional): Reference latitude for projection.
+            Defaults to the mean latitude in gps_trip.
+        ref_longitude (float, optional): Reference longitude for projection.
+            Defaults to the mean longitude in gps_trip.
+        save_path (str, optional): If provided, saves the plot to this path.
+        title (str, optional): Title for the plot.
+
+    Returns:
+        None: Displays the plot of the projected GPS coordinates.
+    """
+    # Dictionary to hold grouped values for the projection
+    d = {
+        'ref_lat': ref_latitude or gps_trip.data['Latitude (°)'].mean(),
+        'ref_lon': ref_longitude or gps_trip.data['Longitude (°)'].mean(),
+        'earth_radius': 6378137,  # WGS84 semi-major axis
+        'lat_rad': np.radians(gps_trip.data['Latitude (°)']),
+        'lon_rad': np.radians(gps_trip.data['Longitude (°)']),
+    }
+    d['ref_lat_rad'] = np.radians(d['ref_lat'])
+    d['ref_lon_rad'] = np.radians(d['ref_lon'])
+
+    # Apply equirectangular projection formula
+    x = d['earth_radius'] * (d['lon_rad'] - d['ref_lon_rad']) * np.cos(d['ref_lat_rad'])
+    y = d['earth_radius'] * (d['lat_rad'] - d['ref_lat_rad'])
+
+    # Normalize time for color mapping
+    d['times'] = gps_trip.data['Time (s)'].values
+    d['norm'] = plt.Normalize(d['times'].min(), d['times'].max())
+
+    # Plotting the projected points with time-based colors
+    plt.figure(figsize=(10, 6))
+    sc = plt.scatter(x, y, c=d['times'], cmap="nipy_spectral", norm=d['norm'], marker='o')
+    cbar = plt.colorbar(sc)
+    cbar.set_label('Time (s)')
+
+    plt.xlabel('X (meters)')
+    plt.ylabel('Y (meters)')
+    plt.title(title or 'Equirectangular Projection of GPS Coordinates (Colored by Time)')
+    plt.grid(True)
+
+    # Save plot if path is provided
+    if save_path is not None:
+        plt.savefig(save_path + gps_trip.experiment_name + "_projection.png")
+
+    plt.show()
+
 def plot_acceltrip_acceleration_with_color(accel_trip, **kwargs):
     """
     Plots the specified acceleration component (x, y, z, or total) of an AccelTrip

@@ -89,12 +89,13 @@ def test_gpstrip_extract_gps_data(mock_import_csv):
     gps_trip = GpsTrip("AVG001_gps_circle_walk_1")
     gps_data = gps_trip.extract_gps_data()
     expected_columns = [
-        "Time (s)",
+        "LinterFix",
         "Latitude (°)",
         "Longitude (°)",
         "Altitude (m)",
         "Altitude WGS84 (m)"
     ]
+    expected_columns[0] = "Time (s)"
     assert gps_data is not None, "GPS data should not be None."
     assert isinstance(gps_data, pd.DataFrame), "GPS data should be a DataFrame."
     m1 = "All expected columns should be present."
