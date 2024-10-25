@@ -10,14 +10,6 @@
 | End            | 2024-10-23             | 17:07:31.627 UTC-04:00       |
 
 
-## Down to Up
-
-
-|                | **Date**               | **Time**                      |
-|----------------|------------------------|-------------------------------|
-| Start          | 2024-10-23             | 17:04:11.500 UTC-04:00       |
-| End            | 2024-10-23             | 17:04:38.400 UTC-04:00       |
-
 ## Weather Conditions:
 
 The following data is obtained from (https://www.msn.com/en-us/weather/hourlyforecast).
