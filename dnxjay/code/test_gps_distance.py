@@ -1,6 +1,6 @@
 # test_gps_distance.py
 
-from dnxjay.code.gps_distance import haversine, cumulative_distance, total_distance
+from gps_distance import haversine, cumulative_distance, total_distance
 
 def test_haversine():
     # Check distance between points in different units
