@@ -20,4 +20,4 @@ def unit_converter(val, unit):
     val = val * 0.9144  # From Google Unit Converter
     return val
   else:
-    raise ValueError("Only 'ft' or 'yd' please.)
+    raise ValueError("Only 'ft' or 'yd' please.")
