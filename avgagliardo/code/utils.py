@@ -5,9 +5,9 @@ members of the Trip class.
 List out classes and functions:...
 
 """
+from datetime import datetime
 import pandas as pd
 import numpy as np
-from datetime import datetime
 import matplotlib.pyplot as plt
 
 class CSVImportError(Exception):
@@ -44,18 +44,69 @@ def convert_to_meters(value, unit):
         'inch': 0.0254,      # Inches to meters (exact quantity)
         'in': 0.0254,      # Inches to meters (exact quantity)
         'ft': 0.3048,        # Feet to meters (exact quantity)
-        'feert': 0.3048,        # Feet to meters (exact quantity)
+        'feet': 0.3048,        # Feet to meters (exact quantity)
         'yd': 0.9144,        # Yards to meters (exact quantity)
         'yard': 0.9144,        # Yards to meters (exact quantity)
         'mile': 1609.344,      # Miles to meters (exact quantity)
         'ml': 1609.344      # Miles to meters (exact quantity)
     }
 
-    # Convert the value using the conversion factor for the unit
-    if unit in conversion_factors:
-        return value * conversion_factors[unit]
-    else:
+    # sanitize plural units
+    if unit.endswith('s'):  # if the unit is pluralized
+        unit = unit[:-1]    # make it singular
+
+    # make sure the unit is in our dict
+    if unit not in conversion_factors:
         raise ValueError(f"Unknown unit: {unit}")
+    # Convert the value using the conversion factor for the unit
+    quantity = value * conversion_factors[unit]
+    # and return it
+    return quantity
+
+def convert_to_feet(value, unit):
+    """
+    Converts a given value from a specified unit to feet. This function
+    uses exact quantities for conversion factors where possible.
+
+    Args:
+        value (number): The numerical value to be converted.
+        unit (str): The unit of the value to convert from. Supported units
+        include:
+                    'm' (meters), 'km' (kilometers), 'inch' (inches),
+                    'yd' (yards), 'mile' (miles), 'cm' (centimeters), 'mm' (millimeters).
+
+    Returns:
+        Number: The equivalent value in feet (a float).
+
+    Raises:
+        ValueError: If the specified unit is not supported.
+    """
+    # sanitize units
+    if unit.endswith('s'):  # if the unit is pluralized
+        unit = unit[:-1]    # make it singular
+
+    # Define conversion factors for various units to feet
+    conversion_factors_to_feet = {
+        'm': 1250/381,         # Exact: 1 m = 1250/381 feet
+        'meter': 1250/381,     # Exact based on IYPA of 1959 (see references)
+        'km': 1250000/381,     # Kilometers to feet (exact)
+        'inch': 1/12,          # Inches to feet (exact, 1 foot = 12 inches)
+        'in': 1/12,            # Inches to feet (exact)
+        'cm': 1250/381000,     # Centimeters to feet (exact)
+        'mm': 1250/3810000,    # Millimeters to feet (exact)
+        'yd': 3.0,             # Yards to feet (exact)
+        'yard': 3.0,           # Yards to feet (exact)
+        'mile': 5280.0,        # Miles to feet (exact)
+        'mi': 5280.0           # Miles to feet (exact)
+    }
+
+    # make sure the unit key exists
+    if unit not in conversion_factors_to_feet:
+        raise ValueError(f"Unknown unit: {unit}")
+    # Convert the value using the conversion factor for the unit
+    quantity = value * conversion_factors_to_feet[unit]
+    # and return it
+    return quantity
 
 def import_csv(csv_path):
     """
@@ -113,42 +164,45 @@ def timecode_to_unix(time_str):
 
     return unix_time
 
-def haversine_with_altitude(lat1, lon1, lat2, lon2, alt1, alt2):
+def haversine_with_altitude(start_point, end_point):
     """
     Calculate the 3D great-circle distance between two points on the spherical
-    Earth surface, including the euclidian altitude difference.
+    Earth surface, including the Euclidean altitude difference.
 
     The output distance is in meters.
 
     Args:
-        lat1, lon1, alt1: Latitude, Longitude, and Altitude of point 1.
-        lat2, lon2, alt2: Latitude, Longitude, and Altitude of point 2.
+        start_point (dict): A dictionary with 'lat', 'lon', and 'alt' keys
+            representing the start point's
+        latitude, longitude, and altitude.
+        end_point (dict): A dictionary with 'lat', 'lon', and 'alt' keys
+            representing the end point's latitude, longitude, and altitude.
 
     Returns:
         distance (float): The 3D distance between the two points in meters.
     """
-    R = 6371.0  # Radius of Earth in kilometers
+    radius_earth = 6371.0  # Radius of Earth in kilometers
 
     # Convert degrees to radians
-    lat1 = np.radians(lat1)
-    lon1 = np.radians(lon1)
-    lat2 = np.radians(lat2)
-    lon2 = np.radians(lon2)
+    lat1 = np.radians(start_point['lat'])
+    lon1 = np.radians(start_point['lon'])
+    lat2 = np.radians(end_point['lat'])
+    lon2 = np.radians(end_point['lon'])
 
     # Differences in latitudes, longitudes, and altitudes
-    dlat = lat2 - lat1  # Lat dif in radians
-    dlon = lon2 - lon1  # Long dif in radians
-    dalt = alt2 - alt1  # Altitude difference in meters
+    dlat = lat2 - lat1  # Latitude difference in radians
+    dlon = lon2 - lon1  # Longitude difference in radians
+    dalt = end_point['alt'] - start_point['alt']  # Altitude difference in meters
 
     # Haversine formula for the distance over the Earth's surface (in kilometers)
     a = np.sin(dlat / 2)**2 + np.cos(lat1) * np.cos(lat2) * np.sin(dlon / 2)**2
     c = 2 * np.arctan2(np.sqrt(a), np.sqrt(1 - a))
-    surface_distance_km = R * c  # Distance in kilometers
+    surface_distance_km = radius_earth * c  # Distance in kilometers
 
-    # convert curved surface distance from km to meters
+    # Convert surface distance from km to meters
     surface_distance_m = surface_distance_km * 1000  # Convert to meters
 
-    # 3D eucldian distance, using altitude
+    # 3D Euclidean distance, including altitude
     distance_3d = np.sqrt(surface_distance_m**2 + dalt**2)
 
     return distance_3d
@@ -165,14 +219,13 @@ def plot_gpstrip_segments(gps_trip):
     """
     if gps_trip.segments is None:
         print("Error: No segment data available to plot.")
-        return
 
+    # get the trip segments
     segments = gps_trip.segments
 
     # Check if necessary columns exist in the segments DataFrame
     if not {'start_long', 'start_lat', 'end_long', 'end_lat'}.issubset(segments.columns):
         print("Error: Missing longitude or latitude data in segments.")
-        return
 
     plt.figure(figsize=(10, 6))
 
@@ -209,28 +262,36 @@ def plot_gpstrip_segments_with_color(gps_trip):
     """
     if gps_trip.segments is None:
         print("Error: No segment data available to plot.")
-        return
 
     segments = gps_trip.segments
 
     # Check if necessary columns exist in the segments DataFrame
-    if not {'start_long', 'start_lat', 'end_long', 'end_lat', 'start_t', 'stop_t'}.issubset(segments.columns):
+    if not {
+        'start_long',
+        'start_lat',
+        'end_long',
+        'end_lat',
+        'start_t',
+        'stop_t'
+    }.issubset(segments.columns):
+        # columns are missing, report
         print("Error: Missing longitude, latitude, or time data in segments.")
-        return
 
     # Normalize time data to range from 0 to 1 for color mapping
     times = segments['start_t'].values
     norm = plt.Normalize(times.min(), times.max())  # Normalize the time range
 
     # Create the color map (from red to purple)
-    cmap = plt.cm.plasma
+    cmap = "plasma"
 
     plt.figure(figsize=(10, 6))
 
     # Plot each segment with color corresponding to its start time
     longitudes = np.concatenate([segments['start_long'].values, segments['end_long'].values])
     latitudes = np.concatenate([segments['start_lat'].values, segments['end_lat'].values])
-    colors = np.concatenate([segments['start_t'].values, segments['start_t'].values])  # Use start time for coloring
+
+    # use the start times for coloring
+    colors = np.concatenate([segments['start_t'].values, segments['start_t'].values])
 
     # Use scatter to plot points with colors based on the time
     sc = plt.scatter(longitudes, latitudes, c=colors, cmap=cmap, norm=norm, marker='o')
@@ -254,16 +315,24 @@ def plot_acceltrip_acceleration_with_color(accel_trip,
                                             connect_points=True,
                                             step=1):
     """
-    Plots the specified acceleration component (x, y, z, or total) of an AccelTrip object over time,
-    with color representing the direction and magnitude of acceleration. Red indicates higher positive acceleration,
-    and purple indicates lower or negative acceleration.
+    Plots the specified acceleration component (x, y, z, or total) of an AccelTrip
+    object over time, with color representing the direction and magnitude of
+    acceleration. Red indicates higher positive acceleration, and purple indicates
+    lower or negative acceleration.
 
     Args:
-        accel_trip (AccelTrip): An AccelTrip object with segment data containing time and acceleration components.
-        component (str): The acceleration component to plot ('x', 'y', 'z', or 'total'). Defaults to 'total'.
-        compression_factor (float): Factor to compress the center of the color spectrum. Defaults to 1.0.
-        connect_points (bool): Whether to connect points with lines. Defaults to True.
-        step (int): Plot every Nth point to reduce the number of points displayed. Defaults to 1 (plot all points).
+        accel_trip (AccelTrip): An AccelTrip object with segment data containing
+            time and acceleration components.
+        component (str):
+            The acceleration component to plot ('x', 'y', 'z', or 'total').
+            Defaults to 'total'.
+        compression_factor (float):
+            Factor to compress the center of the color spectrum. Defaults to 1.0.
+        connect_points (bool):
+            Whether to connect points with lines. Defaults to True.
+        step (number):
+            Plot every Nth point to reduce the number of points displayed.
+            Defaults to 1 (plot all points).
 
     Returns:
         None: Displays the plot using Matplotlib.
@@ -297,23 +366,37 @@ def plot_acceltrip_acceleration_with_color(accel_trip,
     acceleration = segments[accel_column].values[::step]
 
     # Apply compression to the acceleration values to broaden the color spectrum
-    compressed_acceleration = np.sign(acceleration) * (np.abs(acceleration) ** (1 / compression_factor))
+    compressed_acceleration = (np.sign(acceleration) *
+        (np.abs(acceleration) ** (1 / compression_factor)))
 
     # Normalize the compressed acceleration values for color mapping
     norm = plt.Normalize(compressed_acceleration.min(), compressed_acceleration.max())
 
     # Create the color map (from purple to red)
-    cmap = plt.cm.nipy_spectral
+    cmap = "nipy_spectral"
 
     # Create the plot
     plt.figure(figsize=(10, 6))
 
     # Optionally connect points with lines
     if connect_points:
-        plt.plot(times, acceleration, color='gray', alpha=0.7, label=f'{component.capitalize()} Acceleration')
+        plt.plot(
+            times,
+            acceleration,
+            color='gray',
+            alpha=0.7,
+            label=f'{component.capitalize()} Acceleration'
+        )
 
     # Plot points with color representing the acceleration magnitude and direction
-    sc = plt.scatter(times, acceleration, c=compressed_acceleration, cmap=cmap, norm=norm, marker='o')
+    sc = plt.scatter(
+        times,
+        acceleration,
+        c=compressed_acceleration,
+        cmap=cmap,
+        norm=norm,
+        marker='o'
+    )
 
     # Create colorbar to indicate acceleration magnitude and direction
     cbar = plt.colorbar(sc)
@@ -322,7 +405,10 @@ def plot_acceltrip_acceleration_with_color(accel_trip,
     # Label the axes
     plt.xlabel('Time (s)')
     plt.ylabel(f'{component.capitalize()} Acceleration (m/s²)')
-    plt.title(f'{component.capitalize()} Acceleration over Time for AccelTrip (Colored by Acceleration Direction)')
+
+    title = f"{component.capitalize()}"
+    title += "Acceleration over Time for AccelTrip (Colored by Acceleration Direction)"
+    plt.title(title)
 
     # Add grid and legend
     plt.grid(True)
@@ -332,15 +418,18 @@ def plot_acceltrip_acceleration_with_color(accel_trip,
 
     # Show the plot
     plt.show()
-
+    return plt
 
 def plot_acceltrip_velocity(accel_trip, component='z'):
     """
-    Plots the specified velocity component (x, y, or z) of an AccelTrip object over time.
+    Plots the specified velocity component (x, y, or z) of an AccelTrip object
+    over time.
 
     Args:
-        accel_trip (AccelTrip): An AccelTrip object with segment data containing time and velocity components.
-        component (str): The velocity component to plot ('x', 'y', or 'z'). Defaults to 'z'.
+        accel_trip (AccelTrip): An AccelTrip object with segment data containing
+            time and velocity components.
+        component (str): The velocity component to plot ('x', 'y', or 'z').
+            Defaults to 'z'.
 
     Returns:
         None: Displays the plot using Matplotlib.
@@ -377,18 +466,28 @@ def plot_acceltrip_velocity(accel_trip, component='z'):
     # Show the plot
     plt.show()
 
-def plot_acceltrip_velocity_with_acceleration_color(accel_trip, component='z', compression_factor=1.0, step=10):
+def plot_acceltrip_velocity_with_acceleration_color(
+        accel_trip,
+        component='z',
+        compression_factor=1.0,
+        step=10):
     """
-    Plots the specified velocity component (x, y, or z) of an AccelTrip object over time, with color representing
-    the direction of acceleration. Red indicates positive acceleration, and purple indicates negative acceleration.
+    Plots the specified velocity component (x, y, or z) of an AccelTrip object
+    over time, with color representing the direction of acceleration. Red
+    indicates positive acceleration, and purple indicates negative acceleration.
 
-    A compression factor is applied to the acceleration values to control the color spectrum, making a wider range
-    of colors visible (compressing the center dominance).
+    A compression factor is applied to the acceleration values to control the
+    color spectrum, making a wider range of colors visible (compressing the
+    center dominance).
 
     Args:
-        accel_trip (AccelTrip): An AccelTrip object with segment data containing time and velocity components.
-        component (str): The velocity component to plot ('x', 'y', or 'z'). Defaults to 'z'.
-        compression_factor (float): Factor to compress the center of the color spectrum. Defaults to 1.0.
+        accel_trip (AccelTrip): An AccelTrip object with segment data containing
+        time and velocity components.
+
+        component (str): The velocity component to plot ('x', 'y', or 'z').
+            Defaults to 'z'.
+        compression_factor (float): Factor to compress the center of the color
+            spectrum. Defaults to 1.0.
         step (int): Downsampling factor, plotting every Nth point. Defaults to 10.
 
     Returns:
@@ -414,31 +513,50 @@ def plot_acceltrip_velocity_with_acceleration_color(accel_trip, component='z', c
     acceleration = np.diff(velocity, prepend=velocity[0])
 
     # Apply compression to the acceleration values to broaden the color spectrum
-    compressed_acceleration = np.sign(acceleration) * (np.abs(acceleration) ** (1 / compression_factor))
+    compressed_acceleration = (
+        np.sign(acceleration) * (np.abs(acceleration) ** (1 / compression_factor))
+    )
 
     # Normalize the compressed acceleration values for color mapping
     norm = plt.Normalize(compressed_acceleration.min(), compressed_acceleration.max())
 
     # Create the color map (from purple to red)
-    cmap = plt.cm.nipy_spectral
+    cmap = "nipy_spectral"
 
     # Create the plot
     plt.figure(figsize=(10, 6))
 
     # Plot lines between points
-    plt.plot(times, velocity, color='gray', alpha=0.7, label=f'{component.upper()}-Velocity')
+    plt.plot(
+        times,
+        velocity,
+        color='gray',
+        alpha=0.7,
+        label=f'{component.upper()}-Velocity'
+    )
 
     # Use scatter to plot points with colors based on the compressed acceleration direction
-    sc = plt.scatter(times, velocity, c=compressed_acceleration, cmap=cmap, norm=norm, marker='o')
+    sc = plt.scatter(
+        times,
+        velocity,
+        c=compressed_acceleration,
+        cmap=cmap,
+        norm=norm,
+        marker='o'
+    )
 
     # Create colorbar to indicate acceleration direction
     cbar = plt.colorbar(sc)
-    cbar.set_label(f'Scaled Acceleration (m/s²)')
+    cbar.set_label('Scaled Acceleration (m/s²)')
 
     # Label the axes
     plt.xlabel('Time (s)')
     plt.ylabel(f'{component.upper()}-Velocity (m/s)')
-    plt.title(f'{component.upper()}-Velocity over Time for AccelTrip (Colored by Acceleration Direction)')
+
+    # set the title of the plot
+    title = f'{component.upper()}'
+    title += '-Velocity over Time for AccelTrip (Colored by Acceleration Direction)'
+    plt.title(title)
 
     # Add grid and legend
     plt.grid(True)
@@ -449,12 +567,14 @@ def plot_acceltrip_velocity_with_acceleration_color(accel_trip, component='z', c
 
 def plot_3d_trajectory(accel_trip):
     """
-    Plots the 3D trajectory of an AccelTrip object using cumulative sums of the velocity components to approximate position.
-    The color of the trajectory represents the time progression. The axes are normalized so that the axis with the largest
-    range determines the scale for all axes.
+    Plots the 3D trajectory of an AccelTrip object using cumulative sums of the
+    velocity components to approximate position. The color of the trajectory
+    represents the time progression. The axes are normalized so that the axis
+    with the largest range determines the scale for all axes.
 
     Args:
-        accel_trip (AccelTrip): An AccelTrip object with segment data containing velocity components.
+        accel_trip (AccelTrip): An AccelTrip object with segment data containing
+        velocity components.
 
     Returns:
         None: Displays the 3D plot using Matplotlib.
@@ -465,44 +585,50 @@ def plot_3d_trajectory(accel_trip):
 
     segments = accel_trip.segments
 
-    # Check if the necessary columns exist in the segments DataFrame
     if not {'start_t', 'velocity_x', 'velocity_y', 'velocity_z'}.issubset(segments.columns):
         print("Error: Missing velocity or time data in segments.")
         return
 
-    # Extract time and velocity components
-    times = segments['start_t'].values
-    velocity_x = segments['velocity_x'].values
-    velocity_y = segments['velocity_y'].values
-    velocity_z = segments['velocity_z'].values
+    # Extract necessary data into dictionaries for better organization
+    data = {
+        'times': segments['start_t'].values,
+        'velocities': {
+            'x': segments['velocity_x'].values,
+            'y': segments['velocity_y'].values,
+            'z': segments['velocity_z'].values
+        }
+    }
 
-    # Estimate position by taking cumulative sums (simple integration of velocities)
-    positions_x = np.cumsum(velocity_x * np.diff(times, prepend=times[0]))
-    positions_y = np.cumsum(velocity_y * np.diff(times, prepend=times[0]))
-    positions_z = np.cumsum(velocity_z * np.diff(times, prepend=times[0]))
+    # Estimate positions by integrating velocity over time
+    positions = {
+        axis: np.cumsum(data['velocities'][axis] * np.diff(data['times'], prepend=data['times'][0]))
+        for axis in ['x', 'y', 'z']
+    }
 
-    # Find the ranges of each axis
-    x_range = positions_x.max() - positions_x.min()
-    y_range = positions_y.max() - positions_y.min()
-    z_range = positions_z.max() - positions_z.min()
+    # Find ranges of each axis
+    ranges = {
+        axis: positions[axis].max() - positions[axis].min()
+        for axis in ['x', 'y', 'z']
+    }
 
-    # Determine the largest range
-    max_range = max(x_range, y_range, z_range)
+    max_range = max(ranges.values())  # Find the largest range
 
-    # Normalize all axes to use the same scale based on the largest range
-    positions_x_normalized = (positions_x - positions_x.min()) / x_range * max_range
-    positions_y_normalized = (positions_y - positions_y.min()) / y_range * max_range
-    positions_z_normalized = (positions_z - positions_z.min()) / z_range * max_range
+    # Normalize positions based on the largest axis range
+    positions_normalized = {
+        axis: (positions[axis] - positions[axis].min()) / ranges[axis] * max_range
+        for axis in ['x', 'y', 'z']
+    }
 
     # Normalize time for color mapping
-    norm = plt.Normalize(times.min(), times.max())
+    norm = plt.Normalize(data['times'].min(), data['times'].max())
 
     # Create 3D plot
     fig = plt.figure(figsize=(10, 8))
     ax = fig.add_subplot(111, projection='3d')
 
     # Plot the 3D trajectory, coloring by time
-    sc = ax.scatter(positions_x_normalized, positions_y_normalized, positions_z_normalized, c=times, cmap='plasma', norm=norm)
+    sc = ax.scatter(positions_normalized['x'], positions_normalized['y'], positions_normalized['z'],
+                    c=data['times'], cmap='plasma', norm=norm)
 
     # Add colorbar to indicate time progression
     cbar = plt.colorbar(sc, ax=ax)
@@ -519,3 +645,51 @@ def plot_3d_trajectory(accel_trip):
 
     # Show the plot
     plt.show()
+
+
+def render_multiplot(list1, list2, save_path='multiplot.png'):
+    """
+    Renders two lists of plots into a single multiplot arranged in two columns.
+
+    Args:
+        list1 (list): The first list of plot functions or plot data to be rendered in the left column.
+        list2 (list): The second list of plot functions or plot data to be rendered in the right column.
+        save_path (str): The file path where the PNG will be saved.
+
+    Returns:
+        None: Saves the multiplot PNG to the specified path.
+    """
+    # Determine the number of rows based on the longest list
+    num_rows = max(len(list1), len(list2))
+
+    # Create a figure with two columns and num_rows rows
+    fig, axes = plt.subplots(num_rows, 2, figsize=(10, 5 * num_rows))
+
+    # If there's only one row, axes will not be a 2D array, so we need to ensure it's iterable.
+    if num_rows == 1:
+        axes = [axes]
+
+    # Plot the first list in the left column
+    for i, plot_func in enumerate(list1):
+        if i < num_rows:
+            axes[i, 0].set_title(f'Plot {i+1} (Left)')
+            plot_func(axes[i, 0])  # Pass the axis to the plot function
+
+    # Plot the second list in the right column
+    for i, plot_func in enumerate(list2):
+        if i < num_rows:
+            axes[i, 1].set_title(f'Plot {i+1} (Right)')
+            plot_func(axes[i, 1])  # Pass the axis to the plot function
+
+    # Remove any empty subplots (in case the lists are not the same length)
+    for i in range(len(list1), num_rows):
+        fig.delaxes(axes[i, 0])
+    for i in range(len(list2), num_rows):
+        fig.delaxes(axes[i, 1])
+
+    # Adjust layout
+    plt.tight_layout()
+
+    # Save the multiplot as a PNG
+    plt.savefig(save_path)
+    plt.close()

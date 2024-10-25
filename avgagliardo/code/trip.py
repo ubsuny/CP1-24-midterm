@@ -24,6 +24,7 @@ import numpy as np
 
 from utils import import_csv, CSVImportError
 from utils import haversine_with_altitude as haversine
+from utils import timecode_to_unix
 
 class TripBase:
     """
@@ -125,8 +126,10 @@ class TripBase:
                 stop_event = meta_df[meta_df['event'] == 'PAUSE'].iloc[0]
 
                 # Extract Unix and human-readable times from the CSV
-                self.times['start_time_unix'] = start_event['system time']
-                self.times['stop_time_unix'] = stop_event['system time']
+                start_time_unix = timecode_to_unix(start_event['system time text'])
+                stop_time_unix = timecode_to_unix(stop_event['system time text'])
+                self.times['start_time_unix'] = start_time_unix
+                self.times['stop_time_unix'] = stop_time_unix
                 self.times['start_time_utc'] = start_event['system time text']
                 self.times['stop_time_utc'] = stop_event['system time text']
 
@@ -159,12 +162,15 @@ class TripBase:
         """
         trip_type = self.trip_type
         start_time_utc = self.times['start_time_utc'] if self.times['start_time_utc'] else 'Unknown'
-        start_time_unix = self.times['start_time_unix'] if self.times['start_time_unix'] else 'Unknown'
+        start_time_unix = (self.times['start_time_unix']
+            if self.times['start_time_unix'] else 'Unknown')
         duration = self.times['duration'] if self.times['duration'] is not None else 'Unknown'
         num_frames = len(self.__raw_frame) if self.__raw_frame is not None else 0
 
         return(
+            "\n--------------------\n"
             f"Trip Summary:\n"
+            "--------------------\n"
             f"Type of trip: {trip_type}\n"
             f"Start time (UTC): {start_time_utc}\n"
             f"Start time (Unix): {start_time_unix}\n"
@@ -199,6 +205,9 @@ class GpsTrip(TripBase):
         # Extract GPS-specific data and store in self.data
         self.data = self.extract_gps_data()
         self.segments = self.calculate_segments()
+
+        # report on the trip's status
+        print(self.report_trip_summary())
 
     def extract_gps_data(self):
         """
@@ -250,15 +259,24 @@ class GpsTrip(TripBase):
         # Get the dataframe and make a copy
         df = self.data.copy()
 
+        # print(self.get_raw_frame())
+        # print(df)
         # Shift latitude, longitude, and altitude to get the next point's coordinates
         df['Latitude_next'] = df['Latitude (°)'].shift(-1)
         df['Longitude_next'] = df['Longitude (°)'].shift(-1)
-        df['Altitude_next'] = df['Altitude (m)'].shift(-1)
+        df['Altitude_next (m)'] = df['Altitude (m)'].shift(-1)
+        df['Altitude WGS84_next (m)'] = df['Altitude WGS84 (m)'].shift(-1)
         df['Time_next'] = df['Time (s)'].shift(-1)
 
         # Drop the last row, as it will have NaN values due to shifting
         df = df.dropna(
-            subset=['Latitude_next', 'Longitude_next', 'Altitude_next', 'Time_next']
+            subset=[
+            'Latitude_next',
+            'Longitude_next',
+            'Altitude_next (m)',
+            'Altitude WGS84_next (m)',
+            'Time_next'
+            ]
         )
 
 
@@ -285,12 +303,23 @@ class GpsTrip(TripBase):
         df['Planar_Distance'] = np.sqrt(df['Latitude_Displacement_m']**2 +
             df['Longitude_Displacement_m']**2)
 
+        #compose dicts to pass as the segment's two points
+        start_point = {
+            'lat': df['Latitude (°)'],
+            'lon': df['Longitude (°)'],
+            'alt': df['Altitude WGS84 (m)']
+        }
+
+        end_point = {
+            'lat': df['Latitude_next'],
+            'lon': df['Longitude_next'],
+            'alt': df['Altitude WGS84_next (m)']
+        }
+
+
+
         # Calculate the 3D curved distance (Haversine + Altitude difference)
-        df['Curved_Distance'] = haversine(
-            df['Latitude (°)'], df['Longitude (°)'],
-            df['Latitude_next'], df['Longitude_next'],
-            df['Altitude (m)'], df['Altitude_next']
-        )
+        df['Curved_Distance'] = haversine(start_point, end_point)
 
         # Create the segments DataFrame with start point, end point, planar
         # distance, and curved distance
@@ -310,7 +339,7 @@ class GpsTrip(TripBase):
             # units of degrees
             'end_long': df['Longitude_next'],
             # units of meters
-            'end_alt': df['Altitude_next'],
+            'end_alt': df['Altitude_next (m)'],
             # Displacement for Latitude, degrees
             'lat_delta': df['Latitude_Displacement'],
             # Displacement for Longitude. degrees
@@ -325,6 +354,41 @@ class GpsTrip(TripBase):
 
         return segments
 
+    def report_trip_summary(self):
+        """
+        Public method that generates a summary report of the trip details.
+        It reports the trip type, start time in UTC, trip duration, the number
+        of frames in the raw trip data, and the total distance traveled (both
+        planar and curved).
+
+        Returns:
+            str: A formatted string containing the trip type, start time (UTC),
+            duration (in seconds),
+            number of data frames, total planar distance, and total curved distance.
+        """
+        trip_type = self.trip_type
+        start_time_utc = self.times['start_time_utc'] if self.times['start_time_utc'] else 'Unknown'
+        start_time_unix = self.times['start_time_unix'] if self.times['start_time_unix'] else 'Unknown'
+        duration = self.times['duration'] if self.times['duration'] is not None else 'Unknown'
+        num_frames = len(self.get_raw_frame()) if self.get_raw_frame() is not None else 0
+
+        # Calculate total planar and curved distances
+        total_planar_distance = self.segments['planar_distance'].sum() if self.segments is not None else 0
+        total_curved_distance = self.segments['curved_distance'].sum() if self.segments is not None else 0
+
+        return (
+            "\n--------------------\n"
+            f"Trip Summary:\n"
+            "--------------------\n"
+            f"Type of trip: {trip_type}\n"
+            f"Start time (UTC): {start_time_utc}\n"
+            f"Start time (Unix): {start_time_unix}\n"
+            f"Duration: {duration} seconds\n"
+            f"Number of frames: {num_frames}\n"
+            f"Total planar distance traveled: {total_planar_distance:.2f} meters\n"
+            f"Total curved distance traveled: {total_curved_distance:.2f} meters"
+        )
+
 class AccelTrip(TripBase):
     """
     A class that inherits from TripBase, specifically for trips that include
@@ -338,28 +402,61 @@ class AccelTrip(TripBase):
         this class.
         data (DataFrame): A DataFrame holding specific accelerometer data (e.g.,
         time, x, y, z axes).
+        original_data (DataFrame): A copy of the original raw data for rethresholding.
     """
-    def __init__(self, csv_name, accel_thresholds = {'lower': 1e-8, 'upper': 10.0}):
+    def __init__(self, csv_name, accel_thresholds=None, velocity_thresholds=None):
         """
         Initializes the AccelTrip class by calling the base class initializer
-        to handle
-        trip data and metadata import. Additionally, it will eventually handle
-        accelerometer-specific data.
+        to handle trip data and metadata import. Additionally, it will eventually
+        handle accelerometer-specific data.
+
+        The accel_thresholds dict has two keys, "upper" and "lower" that control
+        the data thresholding of the acceleration frame data. The velocity_thresholds
+        dict controls thresholding for velocity data.
 
         Args:
             csv_name (str): Name of the CSV file (without extension) that
             contains trip data.
+            accel_thresholds (dict): A dictionary containing 'lower' and 'upper'
+            thresholds for acceleration.
+            velocity_thresholds (dict): A dictionary containing 'lower' and 'upper'
+            thresholds for velocity.
         """
         # Call the base class initializer
         super().__init__(csv_name)
 
+        # Set default threshold values if not provided
+        if accel_thresholds is None:
+            accel_thresholds = {'lower': -50, 'upper': 50.0}
+        if velocity_thresholds is None:
+            velocity_thresholds = {'lower': -10.0, 'upper': 10.0}
+
         # Set the trip_type to "ACCEL" for this specific trip
         self.trip_type = "ACCEL"
 
-        # Stub out the accelerometer data for now
+        # Extract accelerometer data and store it
         self.data = self.extract_accel_data()
 
-        self.segments = self.calculate_segments(accel_thresholds)
+        # Store the original, unmodified data for rethresholding
+        self.original_data = self.data.copy()
+
+        # Apply the initial thresholding and calculate segments
+        self.segments = self.calculate_segments(accel_thresholds, velocity_thresholds)
+
+    def rethreshold_data(self, new_accel_thresholds=None, new_velocity_thresholds=None):
+        """
+        Reapplies thresholding to the original accelerometer data and updates
+        the segments based on the new thresholds.
+
+        Args:
+            new_accel_thresholds (dict): New thresholds for acceleration.
+            new_velocity_thresholds (dict): New thresholds for velocity.
+
+        Returns:
+            None
+        """
+        # Apply the new thresholds to the original data
+        self.segments = self.calculate_segments(new_accel_thresholds, new_velocity_thresholds)
 
     def extract_accel_data(self):
         """
@@ -381,7 +478,6 @@ class AccelTrip(TripBase):
             DataFrame: A DataFrame containing the renamed accelerometer
             data columns.
         """
-        # Check if the raw frame exists
         raw_frame = self.get_raw_frame()
         if raw_frame is not None:
             required_columns = [
@@ -392,9 +488,7 @@ class AccelTrip(TripBase):
                 "Absolute acceleration (m/s^2)"
             ]
 
-            # Check if the required columns are present
             if all(col in raw_frame.columns for col in required_columns):
-                # Extract and rename the relevant columns
                 accel_data = raw_frame[required_columns].rename(columns={
                     "Time (s)": "time",
                     "Linear Acceleration x (m/s^2)": "accel_x",
@@ -402,35 +496,36 @@ class AccelTrip(TripBase):
                     "Linear Acceleration z (m/s^2)": "accel_z",
                     "Absolute acceleration (m/s^2)": "accel_absolute"
                 })
-                return accel_data
             else:
                 missing_cols = [col for col in required_columns if col not in raw_frame.columns]
                 print(f"Error: Missing accelerometer columns in the raw data: {missing_cols}")
-                return None
+                accel_data = None
         else:
             print("Error: Raw frame is empty.")
-            return None
+            accel_data = None
+        return accel_data
 
     def calculate_segments(self, accel_thresholds=None, velocity_thresholds=None):
         """
-        Calculates segments from the accelerometer data, including start and stop times,
-        delta time, raw accelerations, and velocity for each segment, with optional thresholding
-        for acceleration and velocity.
+        Calculates segments from the accelerometer data, including start and
+        stop times, delta time, raw accelerations, and velocity for each segment,
+        with optional thresholding for acceleration and velocity.
 
         Args:
-            accel_thresholds (dict): A dictionary containing 'lower' and 'upper' keys for acceleration thresholds.
-                                     Example: {'lower': 0.5, 'upper': 2.0}
-            velocity_thresholds (dict): A dictionary containing 'lower' and 'upper' keys for velocity thresholds.
-                                        Example: {'lower': -5, 'upper': 5}
+            accel_thresholds (dict): A dictionary containing 'lower' and 'upper'
+            keys for acceleration thresholds.
+            velocity_thresholds (dict): A dictionary containing 'lower' and
+            'upper' keys for velocity thresholds.
 
         Returns:
-            DataFrame: Segments data with filtered acceleration and velocity based on thresholds.
+            DataFrame: Segments data with filtered acceleration and velocity
+            based on thresholds.
         """
-        if self.data is None:
+        if self.original_data is None:
             print("Error: No accelerometer data available.")
             return None
 
-        df = self.data.copy()
+        df = self.original_data.copy()
 
         # Shift the time column to calculate the stop time for each segment
         df['time_next'] = df['time'].shift(-1)
@@ -450,7 +545,9 @@ class AccelTrip(TripBase):
         df['accel_z'] = df['accel_z']
 
         # Calculate the total acceleration magnitude for reference if needed
-        df['total_acceleration'] = (df['accel_x']**2 + df['accel_y']**2 + df['accel_z']**2)**0.5
+        df['total_acceleration'] = (
+            (df['accel_x']**2 + df['accel_y']**2 + df['accel_z']**2)**0.5
+        )
 
         # Calculate velocity for each segment independently (without accumulation)
         df['velocity_x'] = df['accel_x'] * df['delta_t']
@@ -461,17 +558,16 @@ class AccelTrip(TripBase):
         if accel_thresholds:
             lower_accel = accel_thresholds.get('lower', -np.inf)
             upper_accel = accel_thresholds.get('upper', np.inf)
-            df = df[(df['total_acceleration'] >= lower_accel) & (df['total_acceleration'] <= upper_accel)]
+            df = df[(df['total_acceleration'] >= lower_accel) &
+                    (df['total_acceleration'] <= upper_accel)]
 
         # Apply velocity thresholding if provided
         if velocity_thresholds:
             lower_vel = velocity_thresholds.get('lower', -np.inf)
             upper_vel = velocity_thresholds.get('upper', np.inf)
-            df = df[
-                (df['velocity_x'] >= lower_vel) & (df['velocity_x'] <= upper_vel) &
-                (df['velocity_y'] >= lower_vel) & (df['velocity_y'] <= upper_vel) &
-                (df['velocity_z'] >= lower_vel) & (df['velocity_z'] <= upper_vel)
-            ]
+            df = df[(df['velocity_x'] >= lower_vel) & (df['velocity_x'] <= upper_vel) &
+                    (df['velocity_y'] >= lower_vel) & (df['velocity_y'] <= upper_vel) &
+                    (df['velocity_z'] >= lower_vel) & (df['velocity_z'] <= upper_vel)]
 
         # Create and return the segments DataFrame
         segments = pd.DataFrame({

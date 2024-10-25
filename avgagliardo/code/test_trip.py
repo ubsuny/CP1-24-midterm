@@ -16,15 +16,12 @@ from trip import TripBase, GpsTrip, AccelTrip
 from trip import CSVImportError
 
 
-
-
 class TestTripBase:
     """
     Test class for the TripBase class from the trip module.
     Contains unit tests that check the functionality of the TripBase class,
     including data import, metadata processing, and error handling.
     """
-
     @pytest.fixture
     def mock_import_csv(self, monkeypatch):
         """
@@ -63,6 +60,7 @@ class TestTripBase:
         """
         trip = TripBase('test_trip')
         print(type(mock_import_csv))
+        print(mock_import_csv)
         # Check if the raw data is correctly imported
         raw_frame = trip.get_raw_frame()
         assert isinstance(raw_frame, pd.DataFrame)
@@ -103,7 +101,6 @@ class TestGpsTrip:
     Test class for the GpsTrip class from the trip module.
     Contains unit tests that check the functionality of the GpsTrip class.
     """
-
     @pytest.fixture
     def mock_import_csv(self, monkeypatch):
         """
@@ -115,13 +112,12 @@ class TestGpsTrip:
         """
         def mock_import(path):
             if 'meta' in path:
-                # Return a mock metadata DataFrame
                 return pd.DataFrame({
                     'event': ['START', 'PAUSE'],
                     'system time': [1000, 2000],
                     'system time text': ['2024-10-20 10:00:00', '2024-10-20 12:00:00']
                 })
-            # Return a mock GPS data DataFrame
+
             return pd.DataFrame({
                 'Time (s)': [1, 2],
                 'Latitude (°)': [40.7128, 40.7138],
@@ -139,10 +135,10 @@ class TestGpsTrip:
         Asserts:
             - The GPS data is imported as a non-empty DataFrame.
         """
-        trip = GpsTrip('test_trip')
+        # report on the mock csv
+        print(type(mock_import_csv))
         print(mock_import_csv)
-        assert isinstance(trip, GpsTrip)
-        # Check if the GPS data is correctly imported
+        trip = GpsTrip('test_trip')
         gps_data = trip.data
         assert isinstance(gps_data, pd.DataFrame)
         assert not gps_data.empty
@@ -156,8 +152,10 @@ class TestGpsTrip:
         Asserts:
             - The segments DataFrame is correctly calculated and is non-empty.
         """
-        trip = GpsTrip('test_trip')
+        # report on the mock csv
+        print(type(mock_import_csv))
         print(mock_import_csv)
+        trip = GpsTrip('test_trip')
         segments = trip.segments
         assert isinstance(segments, pd.DataFrame)
         assert not segments.empty
@@ -167,31 +165,28 @@ class TestAccelTrip:
     Test class for the AccelTrip class from the trip module.
     Contains unit tests that check the functionality of the AccelTrip class.
     """
-
     @pytest.fixture
     def mock_import_csv(self, monkeypatch):
         """
         Fixture that mocks the `import_csv` function to return predefined DataFrames
         for testing purposes. Mocks the import function for both accelerometer
         trip data and metadata.
-
-        Args:
-            monkeypatch: pytest fixture to replace the import_csv function.
         """
         def mock_import(path):
             if 'meta' in path:
-                # Return a mock metadata DataFrame
                 return pd.DataFrame({
                     'event': ['START', 'PAUSE'],
                     'system time': [1000, 2000],
                     'system time text': ['2024-10-20 10:00:00', '2024-10-20 12:00:00']
                 })
-            # Return a mock accelerometer data DataFrame (stub for now)
+            # varied acceleration values to test thresholding
+            # covers below, within, and above thresholds
             return pd.DataFrame({
-                'Time (s)': [1, 2],
-                'X (m/s^2)': [0.1, 0.2],
-                'Y (m/s^2)': [0.3, 0.4],
-                'Z (m/s^2)': [0.5, 0.6]
+                'Time (s)': [1, 2, 3, 4],
+                'Linear Acceleration x (m/s^2)': [0.1, 0.5, 0.9, 1.1],
+                'Linear Acceleration y (m/s^2)': [0.2, 0.6, 0.7, 1.2],
+                'Linear Acceleration z (m/s^2)': [0.3, 0.4, 0.8, 1.3],
+                'Absolute acceleration (m/s^2)': [0.4, 0.7, 1.0, 1.4]
             })
         monkeypatch.setattr('trip.import_csv', mock_import)
 
@@ -203,21 +198,74 @@ class TestAccelTrip:
         Asserts:
             - The accelerometer data is imported as a non-empty DataFrame.
         """
-        trip = AccelTrip('test_trip')
+        # report on the mock csv
+        print(type(mock_import_csv))
         print(mock_import_csv)
-        # Check if the accelerometer data is correctly imported
+        trip = AccelTrip('test_trip')
         accel_data = trip.data
-        assert accel_data is None  # Stubbed out, so accel_data should be None for now
+        assert isinstance(accel_data, pd.DataFrame)
+        assert not accel_data.empty
 
     def test_acceltrip_calculate_segments(self, mock_import_csv):
         """
         Test the calculation of segments for AccelTrip.
-        This checks whether the segmentation of accelerometer data is stubbed out correctly.
+        This checks whether the segmentation of accelerometer data is done correctly.
 
         Asserts:
-            - The segments DataFrame is not calculated (since it's a stub).
+            - The segments DataFrame is correctly calculated and is non-empty.
         """
-        trip = AccelTrip('test_trip')
+        # report on the mock csv
+        print(type(mock_import_csv))
         print(mock_import_csv)
-        segments = trip.calculate_segments()
-        assert segments is None  # Segments are not yet implemented, so should be None
+        trip = AccelTrip('test_trip')
+        segments = trip.segments
+        assert isinstance(segments, pd.DataFrame)
+        assert not segments.empty
+
+    def test_acceltrip_rethreshold_data(self, mock_import_csv):
+        """
+        Test rethresholding functionality for AccelTrip.
+        This checks whether the data can be rethresholded after initialization.
+
+        Asserts:
+            - The segments DataFrame is correctly re-calculated with new thresholds.
+        """
+        # report on the mock csv
+        print(type(mock_import_csv))
+        print(mock_import_csv)
+        trip = AccelTrip('test_trip', accel_thresholds={'lower': 0.2, 'upper': 0.8})
+        segments = trip.segments
+        assert isinstance(segments, pd.DataFrame)
+        assert not segments.empty
+
+        # Now rethreshold the data
+        trip.rethreshold_data(new_accel_thresholds={'lower': 0.5, 'upper': 0.7})
+        segments_rethresholded = trip.segments
+        assert isinstance(segments_rethresholded, pd.DataFrame)
+
+    def test_acceltrip_rethreshold(self, mock_import_csv):
+        """
+        Test the `rethreshold_data` method of the AccelTrip class.
+        Ensures that the rethresholding functionality works as expected and recalculates segments.
+
+        Asserts:
+            - The segments DataFrame is recalculated correctly after rethresholding.
+        """
+        # report on the mock csv
+        print(type(mock_import_csv))
+        print(mock_import_csv)
+        trip = AccelTrip('test_trip', accel_thresholds={'lower': 0.2, 'upper': 1.0})
+        original_segments = trip.segments
+
+        # Reapply a new threshold and check if segments were recalculated
+        trip.rethreshold_data(new_accel_thresholds={'lower': 0.1, 'upper': 0.7})  #
+        segments_rethresholded = trip.segments
+
+        # Assert that the rethresholded DataFrame is not empty
+        assert_msg = "Re-thresholding resulted in an empty DataFrame"
+        assert isinstance(segments_rethresholded, pd.DataFrame)
+        assert not segments_rethresholded.empty, assert_msg
+
+        # Check that the number of rows differs
+        assert_msg = "The number of rows should differ after rethresholding"
+        assert len(original_segments) != len(segments_rethresholded), assert_msg

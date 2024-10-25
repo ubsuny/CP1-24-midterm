@@ -1,17 +1,20 @@
 
 ## TODO
-report distances and Differences
-colorplots
+gps_circle_walk
 compile multiplots
-matplotlib formatting
-readme.md
+how2run.md
+cite sources
 
-
+## explain/expand
+- drift velocity, explain why and how to deal with it
+- data thresholding to deal with noise, explain why and how it works
 
 
 ##Remember
-cmap = plt.cm.nipy_spectral
+- used nipy_spectral from matplotlib
 
+### Notes
+- talk about fixtures in units tests
 
 
 
@@ -32,8 +35,6 @@ https://www.unavco.org/software/geodetic-utilities/geoid-height-calculator/geoid
 https://stackoverflow.com/questions/45618544/how-to-calculate-3d-distance-including-altitude-between-two-points-in-geodjang
 https://geopy.readthedocs.io/en/stable/#geopy.distance.lonlat
 https://www.google.com/books/edition/United_States_Naval_Institute_Proceeding/KSNKAAAAYAAJ?hl=en&gbpv=1&pg=PA738&printsec=frontcover
-- gps to feet
-- gps to xyz
 
 
 
@@ -58,10 +59,3 @@ https://phyphox.org/
 - Python
 - Git
 - Github
-
-
-### Notes
-- talk about fixtures in units tests
-
-### Questions
-is it okay to us OS to import the csv in a unit test?
