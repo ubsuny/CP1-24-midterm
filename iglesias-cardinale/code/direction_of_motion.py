@@ -64,6 +64,6 @@ def direction_of_motion(ax,ay,az,t, i):
     ax.set_ylim([-1, 1])  # Set the range for y-axis
     ax.set_zlim([-1, 1])  # Set the range for z-axis
 
-    ax.title(f'Direction of Motion at times t $\in$ ({t[0]}, {t[-1]})')
+    ax.set_title(f'Direction of Motion at times t $\in$ ({t[i[0]]}, {t[i[-1]]})')
 
     plt.show()
