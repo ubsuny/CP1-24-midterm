@@ -55,7 +55,7 @@ class TripBase:
 
         # Prepare the csv paths
         csv_path = csv_dir + "Raw Data" + '.csv'                 # Filename
-        csv_meta_path = csv_dir + '/meta/time.csv'  # Meta name
+        csv_meta_path = csv_dir + 'meta/time.csv'  # Meta name
 
         # initilize the times dict
         self.times = {
