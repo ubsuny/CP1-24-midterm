@@ -25,4 +25,4 @@ The conversion rate used here is from:
 
 Epoch Converter. “Unix Timestamp Converter.” Accessed October 24, 2024. <https://www.epochconverter.com/>.
 
-*Special thanks to my personal friend Sydney Galasso for looking silly with me in a parking lot on a Sunday to collect data*
+Special thanks to my personal friend Sydney Galasso for looking silly with me in a parking lot on a Sunday to collect data
