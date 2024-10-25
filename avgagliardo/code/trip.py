@@ -49,9 +49,9 @@ class TripBase:
 
         # Ensure that the directory path ends with a slash
         if not csv_unzip_name.endswith('/'):
-            csv_dir = '../data/' + csv_unzip_name + '/'  # Directory path
+            csv_dir = 'avgagliardo/data/' + csv_unzip_name + '/'  # Directory path
         else:
-            csv_dir = '../data/' + csv_unzip_name        # Directory path
+            csv_dir = 'avgagliardo/data/' + csv_unzip_name        # Directory path
 
         # Prepare the csv paths
         csv_path = csv_dir + "Raw Data" + '.csv'                 # Filename

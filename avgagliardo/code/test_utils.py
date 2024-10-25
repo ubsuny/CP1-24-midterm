@@ -113,7 +113,7 @@ class TestImportCsv:
         DataFrame.
         """
         # Path to the valid GPS CSV file
-        csv_file_path = '../data/test/valid_gps.csv'
+        csv_file_path = 'avgagliardo/data/test/valid_gps.csv'
 
         # Call the function and check the returned DataFrame
         df = import_csv(csv_file_path)
@@ -138,7 +138,7 @@ class TestImportCsv:
         a DataFrame.
         """
         # Path to the valid accelerometer CSV file
-        csv_file_path = '../data/test/valid_accel.csv'
+        csv_file_path = 'avgagliardo/data/test/valid_accel.csv'
 
         # Call the function and check the returned DataFrame
         df = import_csv(csv_file_path)
