@@ -4,7 +4,7 @@ between two points on Earth's surface given their latitude and longitude.
 """
 import pytest
 import numpy as np
-from distance_gps_location import haversine 
+from distance_gps_location import haversine
 
 def test_haversine():
     """
