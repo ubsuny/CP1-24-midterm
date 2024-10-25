@@ -2,8 +2,8 @@
 This module contains functions for processing CSV files and converting timestamps to Unix time.
 """
 import datetime
-import pandas as pd
 from datetime import timedelta
+import pandas as pd
 
 def add_timestamp_to_data(file_path, start_time_str):
     """
@@ -30,25 +30,27 @@ def add_timestamp_to_data(file_path, start_time_str):
 def process_multiple_files(csv_file_paths, csv_start_times):
     """
     Process multiple CSV files and convert their time data to full date-time and Unix time.
+    
     Parameters:
-    file_paths (list of str): List of file paths for the CSV files.
-    start_times (list of str): List of start date-time strings for each corresponding file.
+    csv_file_paths (list of str): List of file paths for the CSV files.
+    csv_start_times (list of str): List of start date-time strings for each corresponding file.
+    
     Returns:
     dict: A dictionary where keys are file paths and values are DataFrames with timestamp data.
     """
-    data_frames = {}
+    processed_data_frames = {}
     # Loop through each file and its corresponding start time
-    for file_path, start_time_str in zip(file_paths, start_times):
+    for file_path, start_time_str in zip(csv_file_paths, csv_start_times):
         print(f"Processing {file_path} with start time {start_time_str}")
         # Process each file and store the result in the dictionary
         df_with_timestamps = add_timestamp_to_data(file_path, start_time_str)
-        data_frames[file_path] = df_with_timestamps
+        processed_data_frames[file_path] = df_with_timestamps
         
         # Optionally, save the DataFrame with timestamps to a new CSV file
         output_file = file_path.replace('.csv', '_with_timestamps.csv')
         df_with_timestamps.to_csv(output_file, index=False)
         print(f"Saved {output_file}")
-    return data_frames
+    return processed_data_frames
 
 # Example usage
 # List of CSV file paths (replace with your actual file paths)
