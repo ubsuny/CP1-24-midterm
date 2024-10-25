@@ -13,7 +13,7 @@ def get_del_t(times):
     return dt
 def adjust_acc(acc):
     for i in range(len(acc)):
-        if np.abs(acc[i])<1:
+        if np.abs(acc[i])<.8:
             acc[i]=0
     return acc
 
@@ -45,8 +45,3 @@ def acc_reader(path):
     acc=file["Linear Acceleration z (m/s^2)"]
     times=file["Time (s)"]
     return acc, times
-    
-acc,times=acc_reader("/workspaces/CP1-24-midterm/main_file/up_data/Raw Data.csv")
-
-
-    
