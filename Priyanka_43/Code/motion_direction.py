@@ -19,15 +19,14 @@ def calculate_direction(x, y, z):
     # Calculate the magnitude of the vector
     magnitude = math.sqrt(x**2 + y**2 + z**2)
     
-if magnitude == 0:
+   if magnitude == 0:
         raise ValueError("Acceleration magnitude is zero; direction cannot be determined.")
     
+   # Calculate the polar angle θ (angle from z-axis)
+   theta = math.acos(z / magnitude)
 
- # Calculate the polar angle θ (angle from z-axis)
-theta = math.acos(z / magnitude)
-
- # Calculate the azimuthal angle φ (angle in x-y plane)
-phi = math.atan2(y, x)
+   # Calculate the azimuthal angle φ (angle in x-y plane)
+   phi = math.atan2(y, x)
 
     # Convert radians to degrees
     theta_deg = math.degrees(theta)
