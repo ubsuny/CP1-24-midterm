@@ -1,3 +1,7 @@
+"""
+This module contains a function to calculate the great-circle distance 
+between two geographic points on Earth using the Haversine formula.
+"""
 import numpy as np
 def haversine(lat1, lon1, lat2, lon2):
     """
@@ -20,12 +24,19 @@ def haversine(lat1, lon1, lat2, lon2):
     c = 2 * np.arctan2(np.sqrt(a), np.sqrt(1 - a))
     
     # Radius of the Earth in meters
-    R = 6378137
-    return R * c  # Distance in meters
+    earth_radius = 6378137
+    return earth_radius * c  # Distance in meters
 
-# Example from VS003_gps_circle.csv
-lat1, lon1 = 4.299989630E1, -7.879087550E1
-lat2, lon2 = 4.300014220E1, -7.879150780E1
+def example_usage():
+    """
+    Example usage of the haversine function using sample coordinates.
+    """
+    # Example from VS003_gps_circle.csv
+    lat1, lon1 = 4.299989630E1, -7.879087550E1
+    lat2, lon2 = 4.300014220E1, -7.879150780E1
 
-distance = haversine(lat1, lon1, lat2, lon2)
-print(f"Distance: {distance} meters")
+    distance = haversine(lat1, lon1, lat2, lon2)
+    print(f"Distance: {distance} meters")
+
+if __name__ == "__main__":
+    example_usage()
