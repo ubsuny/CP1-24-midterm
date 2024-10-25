@@ -45,7 +45,6 @@ def process_multiple_files(csv_file_paths, csv_start_times):
         # Process each file and store the result in the dictionary
         df_with_timestamps = add_timestamp_to_data(file_path, start_time_str)
         processed_data_frames[file_path] = df_with_timestamps
-        
         # Optionally, save the DataFrame with timestamps to a new CSV file
         output_file = file_path.replace('.csv', '_with_timestamps.csv')
         df_with_timestamps.to_csv(output_file, index=False)
