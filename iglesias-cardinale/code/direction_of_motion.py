@@ -36,7 +36,7 @@ def direction_of_motion(ax,ay,az,t, i):
     - ax: x-acceleration at each time, t
     - ay: y-acceleration at each time, t
     - az: z-acceleration at each time, t
-    - i: index of t at which we find the direction of motion
+    - i: index of t at which we find the direction of motion. Must be given as a list of all time indices of interest
 
     Returns:
     - 3d plot of normalized vector v 
@@ -62,6 +62,8 @@ def direction_of_motion(ax,ay,az,t, i):
 
     ax.set_xlim([-1, 1])  # Set the range for x-axis
     ax.set_ylim([-1, 1])  # Set the range for y-axis
-    ax.set_zlim([-1, 1])
+    ax.set_zlim([-1, 1])  # Set the range for z-axis
+
+    ax.title(f'Direction of Motion at times t $\in$ ({t[0]}, {t[-1]})')
 
     plt.show()
