@@ -3,7 +3,7 @@ This module is to define the plotting functions to be used
 to trace the motion in the different experiments
 """
 
-from libraries_module import np, pd, plt
+from libraries_module import plt
 
 # Function to plot two dimensional data
 def two_dimensional_plot(horizontal, vertical, title, horizontal_label, vertical_label, filename,
@@ -58,7 +58,7 @@ def multi_plot(horizontal_list, vertical_list, title, horizontal_label, vertical
     plt.figure(figsize=(10, 6))
 
     lists_number = len(horizontal_list)
-    sizes = [len(i) for i in horizontal_list]
+    # sizes = [len(i) for i in horizontal_list]
 
     for i in range(lists_number):
         if line_plot:
