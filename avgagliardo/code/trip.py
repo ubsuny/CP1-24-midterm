@@ -45,6 +45,8 @@ class TripBase:
             "Raw Data.csv". If you unzip PhyFox data export (as a complete dir),
             this will be the name of the new directory.
         """
+        self.experiment_name = csv_unzip_name
+
         # Ensure that the directory path ends with a slash
         if not csv_unzip_name.endswith('/'):
             csv_dir = '../data/' + csv_unzip_name + '/'  # Directory path
@@ -118,6 +120,10 @@ class TripBase:
             `__raw_frame_meta`.
         """
         try:
+            # sanitize path
+            if meta_csv_path.endswith('/'):
+                meta_csv_path = meta_csv_path[:-1]
+
             meta_df = import_csv(meta_csv_path)
 
             if meta_df is not None:
@@ -160,6 +166,7 @@ class TripBase:
             str: A formatted string containing the trip type, start time (UTC),
             duration (in seconds), and the number of data frames.
         """
+        experiment_name = self.experiment_name
         trip_type = self.trip_type
         start_time_utc = self.times['start_time_utc'] if self.times['start_time_utc'] else 'Unknown'
         start_time_unix = (self.times['start_time_unix']
@@ -171,6 +178,7 @@ class TripBase:
             "\n--------------------\n"
             f"Trip Summary:\n"
             "--------------------\n"
+            f"Experiment Name: {experiment_name}\n"
             f"Type of trip: {trip_type}\n"
             f"Start time (UTC): {start_time_utc}\n"
             f"Start time (Unix): {start_time_unix}\n"
@@ -199,6 +207,7 @@ class GpsTrip(TripBase):
         # Call the base class initializer
         super().__init__(csv_name)
 
+        self.experiment_name = csv_name
         # Set the trip_type to "GPS" for this specific trip
         self.trip_type = "GPS"
 
@@ -366,20 +375,26 @@ class GpsTrip(TripBase):
             duration (in seconds),
             number of data frames, total planar distance, and total curved distance.
         """
+        experiment_name = self.experiment_name
         trip_type = self.trip_type
         start_time_utc = self.times['start_time_utc'] if self.times['start_time_utc'] else 'Unknown'
-        start_time_unix = self.times['start_time_unix'] if self.times['start_time_unix'] else 'Unknown'
-        duration = self.times['duration'] if self.times['duration'] is not None else 'Unknown'
+        start_time_unix = (self.times['start_time_unix']
+            if self.times['start_time_unix'] else 'Unknown')
+        duration = (self.times['duration']
+            if self.times['duration'] is not None else 'Unknown')
         num_frames = len(self.get_raw_frame()) if self.get_raw_frame() is not None else 0
 
         # Calculate total planar and curved distances
-        total_planar_distance = self.segments['planar_distance'].sum() if self.segments is not None else 0
-        total_curved_distance = self.segments['curved_distance'].sum() if self.segments is not None else 0
+        total_planar_distance = (self.segments['planar_distance'].sum()
+            if self.segments is not None else 0)
+        total_curved_distance = (self.segments['curved_distance'].sum()
+            if self.segments is not None else 0)
 
         return (
             "\n--------------------\n"
             f"Trip Summary:\n"
             "--------------------\n"
+            f"Experiment Name: {experiment_name}\n"
             f"Type of trip: {trip_type}\n"
             f"Start time (UTC): {start_time_utc}\n"
             f"Start time (Unix): {start_time_unix}\n"
@@ -432,6 +447,7 @@ class AccelTrip(TripBase):
             velocity_thresholds = {'lower': -10.0, 'upper': 10.0}
 
         # Set the trip_type to "ACCEL" for this specific trip
+        self.experiment_name = csv_name
         self.trip_type = "ACCEL"
 
         # Extract accelerometer data and store it
