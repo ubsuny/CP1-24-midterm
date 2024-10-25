@@ -24,6 +24,7 @@ The following data is obtained from (https://www.msn.com/en-us/weather/hourlyfor
 | Air Quality Index (AQI)         | 21               |
 | Pressure                         | 1022 mb          |
 | UV                               | Level 1          |
+| Elevation                        | 176.479 m         |
 
 
 ### Location
