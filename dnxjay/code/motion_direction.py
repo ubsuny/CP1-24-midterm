@@ -11,19 +11,32 @@ def read_acceleration_data(csv_file):
         csv_file (str): Path to the CSV file.
         
     Returns:
-        np.ndarray: Array with columns [time, x_acc, y_acc, z_acc].
+        np.ndarray: Array with columns [time, x_acc, y_acc, z_acc], or None if error occurs.
     """
     try:
         data = np.genfromtxt(csv_file, delimiter=',', skip_header=1)
         if data.shape[1] != 4:
-            raise ValueError("CSV file should have exactly four columns: time, x, y, z")
+            raise ValueError("CSV file should have exactly four columns: time, x_acc, y_acc, z_acc.")
         return data
     except IOError:
-        print(f"Error: Could not read file {csv_file}")
+        print(f"Error: Could not read file '{csv_file}'. Ensure the file exists and is accessible.")
         return None
     except ValueError as e:
         print(f"Error: {e}")
         return None
+
+def calculate_direction(x, y, z=0):
+    """Calculate the direction in the XY plane based on x and y acceleration components.
+    
+    Args:
+        x (float): Acceleration in the x-direction.
+        y (float): Acceleration in the y-direction.
+        z (float, optional): Acceleration in the z-direction. Defaults to 0.
+        
+    Returns:
+        float: Direction in degrees from the x-axis.
+    """
+    return np.degrees(np.arctan2(y, x))
 
 def calculate_position(data):
     """Calculate position using numerical integration of acceleration data.
@@ -39,15 +52,15 @@ def calculate_position(data):
     y_acc = data[:, 2]
     z_acc = data[:, 3]
 
-    # Calculate time intervals, prepend first interval as 0
-    dt = np.diff(time, prepend=time[0])
+    # Calculate time intervals; start with a zero interval at the beginning
+    dt = np.diff(time, prepend=0)
 
-    # Velocity integration from acceleration (v = ∫a dt)
+    # Integrate acceleration to velocity
     x_velocity = np.cumsum(x_acc * dt)
     y_velocity = np.cumsum(y_acc * dt)
     z_velocity = np.cumsum(z_acc * dt)
 
-    # Position integration from velocity (s = ∫v dt)
+    # Integrate velocity to position
     x_position = np.cumsum(x_velocity * dt)
     y_position = np.cumsum(y_velocity * dt)
     z_position = np.cumsum(z_velocity * dt)
@@ -100,6 +113,9 @@ def process_acceleration_data(csv_file, gen_pic):
     Args:
         csv_file (str): Path to the CSV file with acceleration data.
         gen_pic (str): File path for saving the plot.
+        
+    Returns:
+        tuple or None: Position data as (x_position, y_position, z_position), or None if error occurs.
     """
     data = read_acceleration_data(csv_file)
     if data is None:

@@ -20,4 +20,4 @@ def test_calculate_direction():
     assert round(calculate_direction(-1e-9, -1e-9, 0), 2) == -135.0
 
     # Direction with only z-component (should ideally not affect XY-plane direction)
-    assert round(calculate_direction(1, 1, 1), 2) == 45.0
+    assert round(calculate_direction(1, 1, 1), 2) == 45.0 
