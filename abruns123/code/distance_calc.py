@@ -2,19 +2,17 @@
 The distance module includes functions
 revolving around calculating the distance 
 between two sets of longitudes and latitudes
-in units of meters. This comes with the assumption
-that the earth is a flat surface. 
+in units of meters. 
 """
-import numpy as np
-import unit_converter
 import pandas as pd
+import numpy as np
+import unit_converter as unit_converter
+
 
 def diff(lat1,lat2, lon1,lon2):
     """
     diff calculates the distance between a pair
-    of latitudes and longitudes where
-    lat1, lon1 are initial latitude and longitude 
-    while lat 2 and lon2 are final latitude and longitude
+    of latitudes and longitudes.
     """
 
     #the latitudes and longitudes are converted to feet
@@ -40,6 +38,9 @@ def reader(path):
     and longitude information
     """
     file=pd.read_csv(path)
+
+    #condition1 and 2 are used to verify that
+    #a file with the correct data is input
     condition1=False
     condition2=False
     for c in file:
@@ -57,10 +58,7 @@ def get_coords(d,xy,i):
     """
     get_coords uses recursion to determine 
     xy coordinates of a position after a 
-    series of displacements defined by 
-    the list of displacements d. i initially 
-    is the indici defining which data point
-    the user wants to produce coordinates for.
+    series of displacements.
     """
 
     if i==0:

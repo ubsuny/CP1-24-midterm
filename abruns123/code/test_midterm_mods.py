@@ -7,7 +7,8 @@ pytest used with the commandline.
 import numpy as np
 from unit_converter import ft_to_m, yd_to_m
 from unix_time import years, time, time_reader,date_reader
-from distance2 import diffm, reader
+from distance_calc import diffm, reader
+from abruns123.code.direction_of_motion import get_direction, acc_reader
 
 def test_ft_to_m():
     """
@@ -15,7 +16,7 @@ def test_ft_to_m():
     function successfully carries out 
     unit conversion from feet to meters
     """
-    np.testing.assert_allclose(ft_to_m(1),(.3048)) 
+    np.testing.assert_allclose(ft_to_m(1),(.3048))
 
 def test_yd_to_m():
     """
@@ -61,7 +62,6 @@ def test_diffm():
     lon1=-78.785005700
     lon2=-78.784864890
     assert len(diffm(lat1,lat2,lon1,lon2))==2
- 
 
 def test_reader():
     """
@@ -72,3 +72,19 @@ def test_reader():
     reader("/workspaces/CP1-24-midterm/main_file/Triangle Data/time.csv")
     time_reader("/workspaces/CP1-24-midterm/main_file/Triangle Data/time.csv")
     date_reader("/workspaces/CP1-24-midterm/main_file/Triangle Data/Location.csv")
+    acc_reader("/workspaces/CP1-24-midterm/main_file/Triangle Data/time.csv")
+
+def test_direction():
+    """
+    test_direction verifies that the start and end behaviors
+    of the two elevator experiments are as expected
+    """
+    acc,times=acc_reader("/workspaces/CP1-24-midterm/main_file/down_data/Raw Data.csv")
+    directions=get_direction(times, acc)
+    assert directions[0]==0
+    assert directions[len(directions)-1]==0
+
+    acc,times=acc_reader("/workspaces/CP1-24-midterm/main_file/up_data/Raw Data.csv")
+    directions=get_direction(times, acc)
+    assert directions[0]==0
+    assert directions[len(directions)-1]==0

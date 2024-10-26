@@ -1,10 +1,6 @@
 """
 This module contains functions revolving around
-converting time to unix time. This includes the 
-functionality of returning individual unix time
-values for a given date, as well as a set of 
-unix time values for a given date and set of 
-time data-points
+converting time to unix time. 
 """
 
 import pandas as pd
@@ -12,18 +8,19 @@ import pandas as pd
 def years(y):
     """
     years takes in a year input y and
-    returns 2 lists. nyears is of length
-    equal to the number of non-leap years 
-    between 1970 and y, not including y,
-    and each value is 365. lyears is of 
-    length equal to the number of leap years
-    between 1970 and y, not including y,
-    and each value is 366
+    returns 2 lists defining the number 
+    of days within the years and leap
+    years.
     """
 
     the_years=list(range(1970,y))
+    #nyears is a list containing 365 for each non-leapyear
     nyears=[365 for y in the_years if y%4!=0 or (y%100==0 and y%400!=0)]
+    #lyears is a list containing 366 for each leapyear
     lyears=[366 for y in the_years if (y%100==0 and y%400==0) or (y%100!=0 and y%4==0)]
+
+    #These two lists together contain the information needed to determine how many
+    #days have passed from the beginning of 1970 to the input year.
 
     return nyears,lyears
 
