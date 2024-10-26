@@ -5,7 +5,7 @@ import pandas as pd
 from Tolani4.Code.direction_calculator import calculate_direction
 
 # Load sample acceleration data (replace with actual data file path)
-data = pd.read_csv("data/elevator_up.csv")
+data = pd.read_csv("Data/elevator_up.csv")
 directions = calculate_direction(data)
 
 plt.plot(directions)
