@@ -13,11 +13,11 @@ def haversine(lat1, lon1, lat2, lon2, unit="meters"):
         raise ValueError("Latitude values must be between -90 and 90 degrees.")
     if not (-180 <= lon1 <= 180 and -180 <= lon2 <= 180):
         raise ValueError("Longitude values must be between -180 and 180 degrees.")
-    
+
     phi1, phi2 = np.radians(lat1), np.radians(lat2)
     delta_phi = np.radians(lat2 - lat1)
     delta_lambda = np.radians(lon2 - lon1)
-    
+
     a = (np.sin(delta_phi / 2) ** 2 +
          np.cos(phi1) * np.cos(phi2) * np.sin(delta_lambda / 2) ** 2)
     c = 2 * np.arctan2(np.sqrt(a), np.sqrt(1 - a))

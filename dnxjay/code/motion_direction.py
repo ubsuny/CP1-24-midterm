@@ -1,4 +1,6 @@
-"""This module reads acceleration data from a CSV file and plots the motion path in x, y, and z directions over time."""
+"""This module reads acceleration data from a CSV file and plots the motion path 
+in x, y, and z directions over time.
+"""
 
 import numpy as np
 import matplotlib.pyplot as plt
