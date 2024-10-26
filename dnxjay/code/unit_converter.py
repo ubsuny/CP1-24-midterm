@@ -1,23 +1,9 @@
-# unit_converter.py
+"""Module for unit conversions, such as feet to meters and meters to feet."""
 
 def feet_to_meters(feet):
-    """Convert feet to meters.
-    
-    Args:
-        feet (float): Distance in feet.
-        
-    Returns:
-        float: Distance in meters.
-    """
+    """Convert feet to meters."""
     return feet * 0.3048
 
-def yards_to_meters(yards):
-    """Convert yards to meters.
-    
-    Args:
-        yards (float): Distance in yards.
-        
-    Returns:
-        float: Distance in meters.
-    """
-    return yards * 0.9144
+def meters_to_feet(meters):
+    """Convert meters to feet."""
+    return meters * 3.28084
