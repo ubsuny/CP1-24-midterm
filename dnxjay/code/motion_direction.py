@@ -1,135 +1,49 @@
-"""This module reads acceleration data from a CSV file, calculates motion direction, 
-and plots the motion path in x, y, and z directions over time."""
+"""This module reads acceleration data from a CSV file and plots the motion path in x, y, and z directions over time."""
 
 import numpy as np
 import matplotlib.pyplot as plt
 
+def calculate_direction(x, y, _z=0):
+    """Calculate the direction in the XY plane based on x and y acceleration components."""
+    return np.degrees(np.arctan2(y, x))
+
 def read_acceleration_data(csv_file):
-    """Read acceleration data from a CSV file.
-    
-    Args:
-        csv_file (str): Path to the CSV file.
-        
-    Returns:
-        np.ndarray: Array with columns [time, x_acc, y_acc, z_acc], or None if error occurs.
-    """
+    """Read acceleration data from a CSV file."""
     try:
         data = np.genfromtxt(csv_file, delimiter=',', skip_header=1)
         if data.shape[1] != 4:
-            raise ValueError("CSV file should have exactly four columns: time, x_acc, y_acc, z_acc.")
+            raise ValueError("CSV file should have exactly four columns: time, x, y, z")
         return data
     except IOError:
-        print(f"Error: Could not read file '{csv_file}'. Ensure the file exists and is accessible.")
+        print(f"Error: Could not read file {csv_file}")
         return None
     except ValueError as e:
         print(f"Error: {e}")
         return None
 
-def calculate_direction(x, y, z=0):
-    """Calculate the direction in the XY plane based on x and y acceleration components.
-    
-    Args:
-        x (float): Acceleration in the x-direction.
-        y (float): Acceleration in the y-direction.
-        z (float, optional): Acceleration in the z-direction. Defaults to 0.
-        
-    Returns:
-        float: Direction in degrees from the x-axis.
-    """
-    return np.degrees(np.arctan2(y, x))
-
 def calculate_position(data):
-    """Calculate position using numerical integration of acceleration data.
-    
-    Args:
-        data (np.ndarray): Array containing time, x_acc, y_acc, z_acc.
-        
-    Returns:
-        tuple: Three arrays (x_position, y_position, z_position) representing position over time.
-    """
+    """Calculate position using numerical integration of acceleration data."""
     time = data[:, 0]
-    x_acc = data[:, 1]
-    y_acc = data[:, 2]
-    z_acc = data[:, 3]
+    x_acc, y_acc, z_acc = data[:, 1], data[:, 2], data[:, 3]
 
-    # Calculate time intervals; start with a zero interval at the beginning
     dt = np.diff(time, prepend=0)
-
-    # Integrate acceleration to velocity
-    x_velocity = np.cumsum(x_acc * dt)
-    y_velocity = np.cumsum(y_acc * dt)
-    z_velocity = np.cumsum(z_acc * dt)
-
-    # Integrate velocity to position
-    x_position = np.cumsum(x_velocity * dt)
-    y_position = np.cumsum(y_velocity * dt)
-    z_position = np.cumsum(z_velocity * dt)
+    x_velocity, y_velocity, z_velocity = np.cumsum(x_acc * dt), np.cumsum(y_acc * dt), np.cumsum(z_acc * dt)
+    x_position, y_position, z_position = np.cumsum(x_velocity * dt), np.cumsum(y_velocity * dt), np.cumsum(z_velocity * dt)
 
     return x_position, y_position, z_position
 
 def plot_motion(x_position, y_position, z_position, gen_pic):
-    """Plot motion in x, y, and z directions over time and save as an image.
-    
-    Args:
-        x_position (np.ndarray): X position over time.
-        y_position (np.ndarray): Y position over time.
-        z_position (np.ndarray): Z position over time.
-        gen_pic (str): Path where to save the generated image.
-    """
+    """Plot motion in x, y, and z directions over time and save as an image."""
     plt.figure(figsize=(15, 10))
-
-    # Plot X Position
-    plt.subplot(3, 1, 1)
-    plt.plot(x_position, color='r', linewidth=2)
-    plt.title("X Position over Time")
-    plt.xlabel("Time (s)")
-    plt.ylabel("X Position (m)")
-    plt.grid()
-
-    # Plot Y Position
-    plt.subplot(3, 1, 2)
-    plt.plot(y_position, color='g', linewidth=2)
-    plt.title("Y Position over Time")
-    plt.xlabel("Time (s)")
-    plt.ylabel("Y Position (m)")
-    plt.grid()
-
-    # Plot Z Position
-    plt.subplot(3, 1, 3)
-    plt.plot(z_position, color='b', linewidth=2)
-    plt.title("Z Position over Time")
-    plt.xlabel("Time (s)")
-    plt.ylabel("Z Position (m)")
-    plt.grid()
-
+    for i, (position, color, title) in enumerate(
+        [(x_position, 'r', "X Position"), (y_position, 'g', "Y Position"), (z_position, 'b', "Z Position")], start=1):
+        plt.subplot(3, 1, i)
+        plt.plot(position, color=color, linewidth=2)
+        plt.title(f"{title} over Time")
+        plt.xlabel("Time (s)")
+        plt.ylabel(f"{title} (m)")
+        plt.grid()
     plt.tight_layout()
     plt.savefig(gen_pic)
     plt.close()
     print(f"Motion plot saved as {gen_pic}")
-
-def process_acceleration_data(csv_file, gen_pic):
-    """Main function to process acceleration data and plot motion.
-
-    Args:
-        csv_file (str): Path to the CSV file with acceleration data.
-        gen_pic (str): File path for saving the plot.
-        
-    Returns:
-        tuple or None: Position data as (x_position, y_position, z_position), or None if error occurs.
-    """
-    data = read_acceleration_data(csv_file)
-    if data is None:
-        return None
-
-    x_position, y_position, z_position = calculate_position(data)
-    plot_motion(x_position, y_position, z_position, gen_pic)
-    return x_position, y_position, z_position
-
-# Usage Example
-if __name__ == "__main__":
-    csv_file_input = input("Enter the path to the CSV file: ")
-    output_image = "motion_plot.png"
-    try:
-        process_acceleration_data(csv_file_input, output_image)
-    except Exception as e:
-        print(f"Error during processing: {e}")
