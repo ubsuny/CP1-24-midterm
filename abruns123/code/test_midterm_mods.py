@@ -8,7 +8,7 @@ import numpy as np
 from unit_converter import ft_to_m, yd_to_m
 from unix_time import years, time, time_reader,date_reader
 from distance_calc import diffm, reader
-from abruns123.code.direction_of_motion import get_direction, acc_reader
+from direction_of_motion import get_direction, acc_reader
 
 def test_ft_to_m():
     """
