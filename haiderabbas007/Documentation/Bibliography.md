@@ -8,3 +8,4 @@
 6. van Brummelen, G.R. (2013) *Heavenly Mathematics: The Forgotten Art of Spherical Trigonometry*. Princeton: Princeton University Press.
 7. NASA 'Earth Radius', Available at: https://nssdc.gsfc.nasa.gov/planetary/factsheet/earthfact.html.
 8. National Geospatial-Intelligence Agency *WGS 84: The World Geodetic System 1984*. Available at: https://earth-info.nga.mil/.
+9. GPS Coordinates Available at: https://gps-coordinates.org/
