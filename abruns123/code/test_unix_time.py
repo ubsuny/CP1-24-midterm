@@ -37,6 +37,6 @@ def test_reader():
     can run without producing an error in the case that a 
     file without the data they're meant to read is the input.
     """
-    time_reader("/abruns123/data/Triangle Data/time.csv")
-    date_reader("/abruns123/data/Triangle Data/Location.csv")
+    time_reader("/abruns123/data/triangle_data/meta/time.csv")
+    date_reader("/abruns123/data/triangle_ata/Raw Data.csv")
     
