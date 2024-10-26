@@ -1,5 +1,5 @@
 '''
-unit testing module for unit_converter.py
+unit testing module for unit_converter.py and motion_direction.py
 '''
 import pytest
 
@@ -18,10 +18,6 @@ def test_yards_to_meters():
     function to test the yards to meters conversion
     '''
     assert yards_to_meters(1) == 0.9144   # checking if 1 yard = 0.9144 meter or not
-
-'''
-unit testing module for motion_direction.py
-'''
 
 def test_calculate_direction():
     """Tests for acceleration along the x and z axes"""
