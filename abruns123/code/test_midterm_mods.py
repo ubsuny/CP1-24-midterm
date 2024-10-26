@@ -73,22 +73,22 @@ def test_reader():
     can run without producing an error in the case that a 
     file without the data they're meant to read is the input.
     """
-    reader("/workspaces/CP1-24-midterm/main_file/Triangle Data/time.csv")
-    time_reader("/workspaces/CP1-24-midterm/main_file/Triangle Data/time.csv")
-    date_reader("/workspaces/CP1-24-midterm/main_file/Triangle Data/Location.csv")
-    acc_reader("/workspaces/CP1-24-midterm/main_file/Triangle Data/time.csv")
+    reader("/AB123/data/Triangle Data/time.csv")
+    time_reader("/AB123/data/Triangle Data/time.csv")
+    date_reader("/AB123/data/Triangle Data/Location.csv")
+    acc_reader("/AB123/data/Triangle Data/time.csv")
 
 def test_direction():
     """
     test_direction verifies that the start and end behaviors
     of the two elevator experiments are as expected
     """
-    acc,times=acc_reader("/workspaces/CP1-24-midterm/main_file/down_data/Raw Data.csv")
+    acc,times=acc_reader("/AB123/data/down_data/Raw Data.csv")
     directions=get_direction(times, acc)
     assert directions[0]==0
     assert directions[len(directions)-1]==0
 
-    acc,times=acc_reader("/workspaces/CP1-24-midterm/main_file/up_data/Raw Data.csv")
+    acc,times=acc_reader("/AB123/data/up_data/Raw Data.csv")
     directions=get_direction(times, acc)
     assert directions[0]==0
     assert directions[len(directions)-1]==0
