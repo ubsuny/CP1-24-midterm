@@ -45,5 +45,33 @@ And hence this angle can be used for an arclength between two gps coordinates wh
 
 4. Reference for Unix Time:
    - [https://en.wikipedia.org/wiki/Unix_time](https://en.wikipedia.org/wiki/Unix_time)
+    
 5. Unit converter for expected unit conversions:
    - [https://www.unitconverters.net](https://www.unitconverters.net)
+
+6. Generating and cleaning up mock csv file with pandas:
+   - [https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.to_csv.html](https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.to_csv.html)
+
+7. Radius of Earth source:
+    - [https://nssdc.gsfc.nasa.gov/planetary/factsheet/earthfact.html](https://nssdc.gsfc.nasa.gov/planetary/factsheet/earthfact.html)
+
+8. Numpy angle converter:
+    - [https://numpy.org/devdocs/reference/generated/numpy.deg2rad.html](https://numpy.org/devdocs/reference/generated/numpy.deg2rad.html)
+
+9. Default arguments in python:
+    - [https://www.geeksforgeeks.org/default-arguments-in-python/](https://www.geeksforgeeks.org/default-arguments-in-python/)
+
+10. Numpy linalg.norm:
+    - [https://numpy.org/doc/stable/reference/generated/numpy.linalg.norm.html](https://numpy.org/doc/stable/reference/generated/numpy.linalg.norm.html)
+
+11. Reference for unit testing formatting:
+    - [https://www.lambdatest.com/learning-hub/unit-testing](https://www.lambdatest.com/learning-hub/unit-testing)
+
+12. Pandas CSV manipulation (important):
+    - [https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.to_csv.html](https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.to_csv.html)
+
+13. Figuring out why pylint was yelling at me:
+    - [https://stackoverflow.com/questions/14027417/what-does-pylints-too-few-public-methods-message-mean](https://stackoverflow.com/questions/14027417/what-does-pylints-too-few-public-methods-message-mean)
+
+14. Pandas .to_datetime:
+    - [https://pandas.pydata.org/docs/reference/api/pandas.to_datetime.html](https://pandas.pydata.org/docs/reference/api/pandas.to_datetime.html)
