@@ -109,7 +109,12 @@ def make_end_zero(direction):
             if direction[i]<0:
                 for j in range(i,l):
                     direction[j]=0
-    
+
+    if negative is True:
+        for i in range(l):
+            if direction[i]>0:
+                for j in range(i,l):
+                    direction[j]=0
 
     #If no jostle is detected, the final direction value is
     #set to zero just to make sure that the behavior of the
