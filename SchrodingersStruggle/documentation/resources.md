@@ -12,7 +12,7 @@ $$x = \rho ~ \cos(\theta)\sin(\phi), \quad y=\rho ~ \sin(\theta)\sin(\phi),\quad
 
 $$\therefore ~ r_1 \cdot r_2 = \rho^2 ~ \left( \cos(\theta_1)\sin(\phi_1)\cos(\theta_2)\sin(\phi_2) +  \sin(\theta_1)\sin(\phi_1)\sin(\theta_2)\sin(\phi_2)\right) + \cos(\phi_1)\cos(\phi_2)$$
 
-The following trigonometric identities are taken from ...:
+The following trigonometric identities from the second link in references below:
 
 $$ \cos(\theta_1)\cos(\theta_2) = \frac{1}{2}\left( \cos(\theta_1+\theta_2) + \cos(\theta_1-\theta_2) \right) $$
 
