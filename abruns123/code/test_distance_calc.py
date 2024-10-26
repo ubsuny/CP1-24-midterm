@@ -9,7 +9,7 @@ def test_reader():
     can run without producing an error in the case that a 
     file without the data they're meant to read is the input.
     """
-    reader("/workspaces/CP1-24-midterm/abruns123/data/Triangle Data/time.csv")
+    reader("/abruns123/data/Triangle Data/time.csv")
 
 def test_diffm():
     """
