@@ -1,5 +1,5 @@
 '''
-this module converts the distance in feet and yard to metre
+This module converts the distance in feet and yard to metre
 '''
 def yard_to_metre(distance):
     '''
