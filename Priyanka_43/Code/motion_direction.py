@@ -17,10 +17,7 @@ def calculate_direction(x, y, z):
    """
    # Calculate the magnitude of the vector
    magnitude = math.sqrt(x**2 + y**2 + z**2)
-   
-   if magnitude == 0:
-   raise ValueError("Acceleration magnitude is zero; direction cannot be determined.")
-    
+
    # Calculate the polar angle θ (angle from z-axis)
    theta = math.acos(z / magnitude)
    
