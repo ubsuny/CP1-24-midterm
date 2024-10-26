@@ -40,11 +40,11 @@ class TestUnitConvert:
         meters = uc.m_yrd(meters)
         expected_yards = 2.18723
         assert meters == pytest.approx(expected_yards, rel=0.0001)
-    
+
     def test_invalid_input(self):
         """
         Test how code handles invalid input:
         """
         feet = 'not a number'
         with pytest.raises(TypeError):
-            meters = uc.ft_m(feet)
+            uc.ft_m(feet)
