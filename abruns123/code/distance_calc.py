@@ -16,6 +16,12 @@ def diff(lat1,lat2, lon1,lon2):
     """
 
     #the latitudes and longitudes are converted to feet
+    #citation: [2]How much distance does a degree, minute, and second 
+    # cover on your maps? | U.S. Geological Survey. (2017, 
+    # June 1). https://www.usgs.gov/faqs/how-much-distance-
+    # does-a-degree-minute-and-second-cover-your-maps#:~:
+    # text=One%20degree%20of%20latitude%20equals,one%20second
+    # %20equals%2080%20feet.
     lat1, lat2=lat1*364000,lat2*364000
     lon1, lon2=lon1*288200,lon2*288200
 

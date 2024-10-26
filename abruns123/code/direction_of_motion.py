@@ -64,6 +64,7 @@ def get_direction(times, acc):
     direction values that define the 
     direction of motion.
     """
+
     dt=get_del_t(times)
     acc=adjust_acc(acc)
     vel=get_vel(acc,dt)

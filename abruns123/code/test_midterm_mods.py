@@ -47,6 +47,10 @@ def test_time():
     the time function calculates the correct
     unix time.
     """
+    #Test is based on comparison with test value used 
+    #on unix timestamp website
+    #citation: [1][1] Unix Time Stamp - Epoch Converter. (n.d.). 
+    # https://www.unixtimestamp.com/
     date=[2024,10,24,17,45,53]
     assert time(date)==1729806353
 
