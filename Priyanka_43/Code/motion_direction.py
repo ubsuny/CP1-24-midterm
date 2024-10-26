@@ -4,8 +4,7 @@ This module calculate the direction of motion from acceleration data.
 # motion_direction.py
 
 import math
-
-   
+  
 def calculate_direction(x, y, z):
    """
    Calculate the direction of motion from acceleration data.
@@ -18,16 +17,16 @@ def calculate_direction(x, y, z):
    """
    # Calculate the magnitude of the vector
    magnitude = math.sqrt(x**2 + y**2 + z**2)
-    
+   
    if magnitude == 0:
-        raise ValueError("Acceleration magnitude is zero; direction cannot be determined.")
+   raise ValueError("Acceleration magnitude is zero; direction cannot be determined.")
     
    # Calculate the polar angle θ (angle from z-axis)
    theta = math.acos(z / magnitude)
-
+   
    # Calculate the azimuthal angle φ (angle in x-y plane)
    phi = math.atan2(y, x)
-
+   
    # Convert radians to degrees
    theta_deg = math.degrees(theta)
    phi_deg = math.degrees(phi)
